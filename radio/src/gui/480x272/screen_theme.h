@@ -22,12 +22,26 @@
 #define _SCREEN_THEME_H_
 
 #include "tabsgroup.h"
+#include "libwindows.h"
+#include "opentx.h"
 
-class ScreenThemePage: public PageTab {
+
+class ZoneOptionPage : public PageTab {
+  public:
+    ZoneOptionPage(std::string title, unsigned icon) : PageTab(title, icon) {}
+  protected:
+    void addOption(Window * window, GridLayout& grid, const ZoneOption& option, ZoneOptionValue * value);
+    Window* createOptionEdit(Window * parent, const rect_t &rect, const ZoneOption * option, ZoneOptionValue * value);
+    virtual bool isChangeAllowed(const ZoneOption* option);
+    virtual void onZoneOptionChanged(const ZoneOption* option);
+};
+
+class ScreenThemePage: public ZoneOptionPage {
   public:
     ScreenThemePage();
-    ~ScreenThemePage() override;
     void build(Window * window) override;
+  protected:
+    void onZoneOptionChanged(const ZoneOption* option) override;
 };
 
 #endif //_SCREEN_THEME_H_

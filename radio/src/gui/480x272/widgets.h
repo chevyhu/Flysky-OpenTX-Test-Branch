@@ -78,7 +78,5 @@ void drawSplash();
 
 // Main view standard widgets
 void drawTopBar();
-void drawMainPots();
-void drawTrims(uint8_t flightMode);
 
 #endif // _WIDGETS_H_

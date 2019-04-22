@@ -72,15 +72,6 @@ class Layout2x4: public Layout
 
 void Layout2x4::refresh()
 {
-  theme->drawBackground();
-  int32_t y = 0;
-  if (topBarHeight()) drawTopBar();
-  y += topBarHeight();
-  if (flightModeHeight()) drawFlightMode(y);
-  y += flightModeHeight();
-  if(trimHeight()) drawTrims(mixerCurrentFlightMode);
-  if(sliderHeight()) drawMainPots();
-  Layout::refresh();
   Zone fullScreen = Layout::getZone(0);
   fullScreen.w /=2;
   if (isOptionSet(Panel1BG)) {
@@ -93,6 +84,7 @@ void Layout2x4::refresh()
     lcdSetColor(getZoneOptionValue(Panel2BGC)->unsignedValue);
     lcdDrawSolidFilledRect(fullScreen.x, fullScreen.y, fullScreen.w, fullScreen.h, CUSTOM_COLOR);
   }
+  Layout::refresh();
 }
 
 BaseLayoutFactory<Layout2x4> layout2x4("Layout2x4", LBM_LAYOUT_2x4, OPTIONS_LAYOUT_2x4);

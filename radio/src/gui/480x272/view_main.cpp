@@ -45,7 +45,22 @@
 Layout * customScreens[MAX_CUSTOM_SCREENS] = { 0, 0, 0, 0, 0 };
 Topbar * topbar;
 
-void drawMainPots()
+ViewMain::ViewMain():
+  Window(&mainWindow, { 0, 0, LCD_W, LCD_H }),
+  buttonHeight(NAV_BUTTONS_HEIGHT),
+  buttonLeftModel(50 - buttonHeight/2),
+  buttonLeftRadio(LCD_W / 2 - buttonHeight/2),
+  buttonLeftTheme(LCD_W - 50 - buttonHeight/2)
+{
+  slideDirection = SlideDirection::None;
+}
+
+ViewMain::~ViewMain()
+{
+  deleteChildren();
+}
+
+void ViewMain::drawMainPots()
 {
   // The  pots
   drawHorizontalSlider(TRIM_LH_X, POTS_LINE_Y, TRIM_WIDTH, calibratedAnalogs[CALIBRATED_POT1], -RESX, RESX, 40, OPTION_SLIDER_TICKS | OPTION_SLIDER_BIG_TICKS | OPTION_SLIDER_SQUARE_BUTTON);
@@ -63,7 +78,7 @@ void drawMainPots()
 #endif
 }
 
-void drawTrims(uint8_t flightMode)
+void ViewMain::drawTrims(uint8_t flightMode)
 {
   for (uint8_t i=0; i<4; i++) {
     static const coord_t x[4] = { TRIM_LH_X, TRIM_LV_X, TRIM_RV_X, TRIM_RH_X };
@@ -103,36 +118,19 @@ void drawTrims(uint8_t flightMode)
   }
 }
 
-void onMainViewMenu(const char *result)
-{
-  /*if (result == STR_VIEW_NOTES) {
-    pushModelNotes();
-  }
-  else if (result == STR_STATISTICS) {
-    pushMenu(menuTabStats[0]);
-  }
-  else if (result == STR_ABOUT_US) {
-    chainMenu(menuAboutView);
-  }
-  else if (result == STR_MONITOR_SCREENS) {
-    pushMenu(menuTabMonitors[lastMonitorPage]);
-  }*/
+void ViewMain::drawButton(BitmapBuffer * dc, coord_t x, uint8_t icon) {
+  coord_t y = isTopBarVisible() ? NAV_BUTTONS_MARGIN_TOP : NAV_BUTTONS_MARGIN;
+  dc->drawBitmap(x, y, &ALPHA_BUTTON_OFF);
+  const BitmapBuffer * mask = theme->getIconMask(icon);
+  if(mask) dc->drawMask(x+((buttonHeight-mask->getWidth())/2), y+((buttonHeight-mask->getHeight())/2), mask, TEXT_BGCOLOR);
 }
 
-ViewMain::ViewMain():
-  Window(&mainWindow, { 0, 0, LCD_W, LCD_H }),
-  buttonHeight(NAV_BUTTONS_HEIGHT),
-  buttonLeftModel(50 - buttonHeight/2),
-  buttonLeftRadio(LCD_W / 2 - buttonHeight/2),
-  buttonLeftTheme(LCD_W - 50 - buttonHeight/2)
-{
-	slideDirection = SlideDirection::None;
+void ViewMain::drawFlightMode(coord_t y) {
+  char* name = g_model.flightModeData[mixerCurrentFlightMode].name;
+  coord_t textW = getTextWidth(name,  sizeof(name), ZCHAR | SMLSIZE);
+  lcdDrawSizedText((LCD_W - textW) / 2,  y,  name,  sizeof(name), ZCHAR | SMLSIZE);
 }
 
-ViewMain::~ViewMain()
-{
-  deleteChildren();
-}
 bool ViewMain::onTouchStart(coord_t x, coord_t y)
 {
 	//reset slide direction
@@ -238,35 +236,40 @@ uint8_t ViewMain::prevView()
 
 bool ViewMain::isTopBarVisible() {
 	Layout* layout = customScreens[currentView()];
-	return layout->topBarHeight() > 0;
+	return layout && layout->topBarHeight() > 0;
 }
 bool ViewMain::isNavigationVisible() {
   Layout* layout = customScreens[currentView()];
-  return layout->navigationHeight() > 0;
-}
-
-void ViewMain::drawButton(BitmapBuffer * dc, coord_t x, uint8_t icon) {
-  coord_t y = isTopBarVisible() ? NAV_BUTTONS_MARGIN_TOP : NAV_BUTTONS_MARGIN;
-	dc->drawBitmap(x, y, &ALPHA_BUTTON_OFF);
-	const BitmapBuffer * mask = theme->getIconMask(icon);
-	dc->drawMask(x+((buttonHeight-mask->getWidth())/2), y+((buttonHeight-mask->getHeight())/2), mask, TEXT_BGCOLOR);
+  //if configured or first view
+  return layout->navigationHeight() > 0 || currentView() == 0;
 }
 
 void ViewMain::paint(BitmapBuffer * dc)
 {
   uint8_t view = currentView();
+  Layout* layout = customScreens[view];
+  theme->drawBackground();
+
   for (uint8_t i=0; i<MAX_CUSTOM_SCREENS; i++) {
-    if (customScreens[i]) {
-      if (i == view) {
-        customScreens[i]->refresh();
-      }
-      else
-        customScreens[i]->background();
+    if (i != view && customScreens[i]) customScreens[i]->background();
+  }
+  if(layout) {
+    int32_t y = 0;
+    if (layout->topBarHeight()) drawTopBar();
+    y += layout->topBarHeight();
+
+    if(isNavigationVisible()){
+        drawButton(dc, buttonLeftModel, ICON_MODEL);
+        drawButton(dc, buttonLeftRadio, ICON_RADIO);
+        drawButton(dc, buttonLeftTheme, ICON_THEME);
     }
+    y += layout->navigationHeight();
+    if (layout->flightModeHeight()) drawFlightMode(y);
+    y += layout->flightModeHeight();
+    if(layout->trimHeight()) drawTrims(mixerCurrentFlightMode);
+    if(layout->sliderHeight()) drawMainPots();
+    customScreens[view]->refresh();
   }
-  if(isNavigationVisible() || view == 0){
-    drawButton(dc, buttonLeftModel, ICON_MODEL);
-    drawButton(dc, buttonLeftRadio, ICON_RADIO);
-    drawButton(dc, buttonLeftTheme, ICON_THEME);
-  }
+
+
 }
