@@ -21,18 +21,17 @@
 
 #define  __BATTERY_DRIVER_C__
 
-#define BATTERY_W 140
-#define BATTERY_H 320
-#define BATTERY_TOP ((LCD_H - BATTERY_H)/2)
-#define BATTERY_CONNECTOR_W 32
-#define BATTERY_CONNECTOR_H 10
-#define BATTERY_BORDER 4
+#define BATTERY_W 70
+#define BATTERY_H 160
+#define BATTERY_CONNECTOR_W 16
+#define BATTERY_CONNECTOR_H 4
+#define BATTERY_BORDER 2
 #define BATTERY_W_INNER (BATTERY_W - 2*BATTERY_BORDER)
 #define BATTERY_H_INNER (BATTERY_H - 2*BATTERY_BORDER)
-#define BATTERY_TOP_INNER (BATTERY_TOP + BATTERY_BORDER)
 
 void battery_charge_init()
 {
+	srand (1);  // for charge animation
   GPIO_InitTypeDef GPIO_InitStructure;
   GPIO_InitStructure.GPIO_Pin = PWR_CHARGE_FINISHED_GPIO_PIN | PWR_CHARGING_GPIO_PIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
@@ -107,6 +106,7 @@ uint16_t get_battery_charge_state()
 
 void drawChargingInfo(uint16_t chargeState){
 	static int progress = 0;
+	static int battery_top=(LCD_H - BATTERY_H)/2, battery_left=(LCD_W - BATTERY_W)/2;
 	const char* text = chargeState == CHARGE_STARTED ? STR_BATTERYCHARGING : STR_BATTERYFULL;
     int h = 0;
     LcdFlags color = 0;
@@ -115,6 +115,8 @@ void drawChargingInfo(uint16_t chargeState){
         if(progress >= 100)
         {
             progress = 0;
+            battery_top  = rand()%(LCD_H - BATTERY_H - BATTERY_CONNECTOR_H) + BATTERY_CONNECTOR_H;
+            battery_left = rand()%(LCD_W - BATTERY_W);
         }
         else
         {
@@ -136,13 +138,23 @@ void drawChargingInfo(uint16_t chargeState){
         h = BATTERY_H_INNER;
         color = ROUND|TEXT_COLOR;
     }
-	lcd->drawSizedText(LCD_W/2, LCD_H-50, text, strlen(text), CENTERED|TEXT_BGCOLOR);
+  
+  int text_top;
+  if (battery_top < (LCD_H-BATTERY_H)/2)
+  {
+  		text_top = battery_top + BATTERY_H + 50;
+  }
+  else
+  {
+  	  text_top = battery_top - BATTERY_CONNECTOR_H - 50; 
+  }
+	lcd->drawSizedText(LCD_W/2, text_top , text, strlen(text), CENTERED|TEXT_BGCOLOR);
 
-	lcd->drawFilledRect((LCD_W - BATTERY_W)/2, BATTERY_TOP, BATTERY_W, BATTERY_H, SOLID, ROUND|TEXT_BGCOLOR);
-	lcd->drawFilledRect((LCD_W - BATTERY_W_INNER)/2, BATTERY_TOP_INNER, BATTERY_W_INNER, BATTERY_H_INNER, SOLID, ROUND|TEXT_COLOR);
+	lcd->drawFilledRect(battery_left, battery_top, BATTERY_W, BATTERY_H, SOLID, ROUND|TEXT_BGCOLOR);
+	lcd->drawFilledRect(battery_left + BATTERY_BORDER, battery_top + BATTERY_BORDER, BATTERY_W_INNER, BATTERY_H_INNER, SOLID, ROUND|TEXT_COLOR);
 
-    lcd->drawFilledRect((LCD_W - BATTERY_W_INNER)/2, BATTERY_TOP_INNER + BATTERY_H_INNER - h , BATTERY_W_INNER, h, SOLID, color);
-	lcd->drawFilledRect((LCD_W - BATTERY_CONNECTOR_W)/2, BATTERY_TOP-BATTERY_CONNECTOR_H , BATTERY_CONNECTOR_W, BATTERY_CONNECTOR_H, SOLID, TEXT_BGCOLOR);
+  lcd->drawFilledRect(battery_left + BATTERY_BORDER, battery_top + BATTERY_BORDER + BATTERY_H_INNER - h , BATTERY_W_INNER, h, SOLID, color);
+	lcd->drawFilledRect(battery_left + (BATTERY_W - BATTERY_CONNECTOR_W)/2, battery_top - BATTERY_CONNECTOR_H , BATTERY_CONNECTOR_W, BATTERY_CONNECTOR_H, SOLID, TEXT_BGCOLOR);
 }
 
 //this method should be called by timer interrupt or by GPIO interrupt
