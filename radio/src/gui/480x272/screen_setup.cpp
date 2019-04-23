@@ -76,7 +76,9 @@ void ScreenSetupPage::build(Window * window)
       new TextButton(window, grid.getLineSlot(), STR_ADDMAINVIEW, [=]() -> uint8_t {
     	  inited = true;
     	  if (getRegisteredLayouts().size()) {
-    	      customScreens[index] = getRegisteredLayouts().front()->create(&g_model.screenData[index].layoutData);
+    	    const LayoutFactory* factory = getRegisteredLayouts().front();
+    	    strncpy(g_model.screenData[index].layoutName, factory->getName(), LAYOUT_NAME_LEN);
+    	    customScreens[index] = getRegisteredLayouts().front()->create(&g_model.screenData[index].layoutData);
     	  }
     	  storageDirty(EE_MODEL);
     	  rebuild(window);

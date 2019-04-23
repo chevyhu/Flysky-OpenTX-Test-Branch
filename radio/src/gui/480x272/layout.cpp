@@ -60,7 +60,10 @@ void loadCustomScreens()
   }
 
   if (customScreens[0] == NULL && getRegisteredLayouts().size()) {
-    customScreens[0] = getRegisteredLayouts().front()->create(&g_model.screenData[0].layoutData);
+    const LayoutFactory * factory = getRegisteredLayouts().front();
+    strncpy(g_model.screenData[0].layoutName, factory->getName(), LAYOUT_NAME_LEN);
+    customScreens[0] = factory->create(&g_model.screenData[0].layoutData);
+    storageDirty(EE_MODEL);
   }
   topbar->load();
 }
