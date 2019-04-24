@@ -44,6 +44,9 @@ class ViewMain: public Window {
     bool isTopBarVisible();
     bool isNavigationVisible();
     void drawButton(BitmapBuffer * dc, coord_t x, uint8_t icon);
+    void drawMainPots();
+    void drawTrims(uint8_t flightMode);
+    void drawFlightMode(coord_t y);
     void showMenu();
 
     const int buttonHeight;

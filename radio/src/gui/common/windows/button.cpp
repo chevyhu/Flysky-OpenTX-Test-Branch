@@ -80,5 +80,5 @@ void FabIconButton::paint(BitmapBuffer * dc)
 {
   dc->drawBitmap(0, 0, checked() ? &ALPHA_BUTTON_ON : &ALPHA_BUTTON_OFF);
   const BitmapBuffer * mask = theme->getIconMask(icon);
-  dc->drawMask((68-mask->getWidth())/2, (68-mask->getHeight())/2, mask, TEXT_BGCOLOR);
+  if(mask) dc->drawMask((68-mask->getWidth())/2, (68-mask->getHeight())/2, mask, TEXT_BGCOLOR);
 }

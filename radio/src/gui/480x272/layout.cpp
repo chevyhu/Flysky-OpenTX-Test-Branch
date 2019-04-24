@@ -60,7 +60,10 @@ void loadCustomScreens()
   }
 
   if (customScreens[0] == NULL && getRegisteredLayouts().size()) {
-    customScreens[0] = getRegisteredLayouts().front()->create(&g_model.screenData[0].layoutData);
+    const LayoutFactory * factory = getRegisteredLayouts().front();
+    strncpy(g_model.screenData[0].layoutName, factory->getName(), LAYOUT_NAME_LEN);
+    customScreens[0] = factory->create(&g_model.screenData[0].layoutData);
+    storageDirty(EE_MODEL);
   }
   topbar->load();
 }
@@ -130,23 +133,8 @@ Zone Layout::getZone(unsigned int index) const
   return zone;
 }
 
-void Layout::drawFlightMode(coord_t y) {
-  char* name = g_model.flightModeData[mixerCurrentFlightMode].name;
-  coord_t textW = getTextWidth(name,  sizeof(name), ZCHAR | SMLSIZE);
-  lcdDrawSizedText((LCD_W - textW) / 2,  y,  name,  sizeof(name), ZCHAR | SMLSIZE);
-}
-
 void Layout::refresh()
 {
-  theme->drawBackground();
-  int32_t y = 0;
-  if (topBarHeight()) drawTopBar();
-  y += topBarHeight();
-  y += navigationHeight();
-  if (flightModeHeight()) drawFlightMode(y);
-  y += flightModeHeight();
-  if(trimHeight()) drawTrims(mixerCurrentFlightMode);
-  if(sliderHeight()) drawMainPots();
   WidgetsContainer::refresh();
 }
 

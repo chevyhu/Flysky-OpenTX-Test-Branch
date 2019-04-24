@@ -27,28 +27,29 @@
 #include "libwindows.h"
 #include "view_main.h"
 #include "tabsgroup.h"
+#include "screen_theme.h"
 
-class WidgetConfigPage: public PageTab {
+class WidgetConfigPage: public ZoneOptionPage {
   public:
     WidgetConfigPage(Widget* widget);
     void build(Window * window) override;
   protected:
-    void addOption(Window * window, GridLayout& grid, const ZoneOption& option, ZoneOptionValue* value);
+    void onZoneOptionChanged(const ZoneOption* option) override;
     Widget* widget;
 };
 
-class WidgetsSetupPage: public ViewMain {
+class WidgetsSetupView: public ViewMain {
   public:
-    WidgetsSetupPage(WidgetsContainerInterface* container, uint8_t index, LcdFlags color = TEXT_INVERTED_BGCOLOR, int padding = 4, int thickness = 2);
+    WidgetsSetupView(WidgetsContainerInterface* container, uint8_t index, LcdFlags color = TEXT_INVERTED_BGCOLOR, int padding = 4, int thickness = 2);
 
 #if defined(DEBUG_WINDOWS)
     std::string getName() override
     {
-      return "WidgetsSetupPage";
+      return "WidgetsSetupView";
     }
 #endif
     uint8_t currentView() override;
-    void setWidget(unsigned int zone, Widget* widget);
+    void createWidget(unsigned int zone, const char* name);
     void displayWidgetConfig(Widget* widget);
     void showWidgetMenu(unsigned int zone);
     void showSelectWidgetMenu(unsigned int zone);

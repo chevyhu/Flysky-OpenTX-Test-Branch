@@ -22,17 +22,20 @@
 #define _SCREEN_SETUP_H_
 
 #include "tabsgroup.h"
+#include "screen_theme.h"
 
 class Layout;
 class NumberEdit;
 
-class ScreenSetupPage: public PageTab {
+class ScreenSetupPage: public ZoneOptionPage {
   public:
     ScreenSetupPage(uint8_t index, bool inited = true);
 
     void build(Window * window) override;
 
   protected:
+    bool isChangeAllowed(const ZoneOption* option) override;
+    void onZoneOptionChanged(const ZoneOption* option) override;
     void recreateWidgets();
     uint8_t index;
     bool inited;

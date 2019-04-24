@@ -19,20 +19,26 @@
  */
 
 #include "widgets_setup.h"
-//defined in screen theme - far from OO design
-
-Window * createOptionEdit(Window * parent, const rect_t &rect, const ZoneOption * option, ZoneOptionValue * value);
 
 WidgetConfigPage::WidgetConfigPage(Widget* widget) :
-PageTab(STR_WIDGET_SETTINGS, ICON_THEME_SETUP),
+ZoneOptionPage(STR_WIDGET_SETTINGS, ICON_THEME_SETUP),
 widget(widget)
 {
 }
-
+void WidgetConfigPage::onZoneOptionChanged(const ZoneOption* option) {
+  widget->update();
+  storageDirty(EE_MODEL);
+}
 void WidgetConfigPage::build(Window * window) {
   GridLayout grid;
   grid.spacer(8);
   grid.setLabelWidth(LCD_W/2);
+  const char* error = widget->getErrorMessage();
+  if(error) {
+    new StaticText(window, grid.getLineSlot(), std::string(error), WARNING_COLOR | CENTERED);
+    return;
+  }
+
   const ZoneOption * options = widget->getOptions();
   for (int option=0; ; option++) {
     if(!options || !options[option].name) break;
@@ -40,13 +46,9 @@ void WidgetConfigPage::build(Window * window) {
   }
 }
 
-void WidgetConfigPage::addOption(Window * window, GridLayout& grid, const ZoneOption& option, ZoneOptionValue * value) {
-  new StaticText(window, grid.getLabelSlot(), std::string(option.name));
-  createOptionEdit(window, grid.getFieldSlot(), &option, value);
-  grid.nextLine();
-}
 
-WidgetsSetupPage::WidgetsSetupPage(WidgetsContainerInterface* container, uint8_t index, LcdFlags color, int padding, int thickness):
+
+WidgetsSetupView::WidgetsSetupView(WidgetsContainerInterface* container, uint8_t index, LcdFlags color, int padding, int thickness):
   ViewMain(),
   container(container),
   index(index),
@@ -56,13 +58,22 @@ WidgetsSetupPage::WidgetsSetupPage(WidgetsContainerInterface* container, uint8_t
 {
 }
 
-void WidgetsSetupPage::setWidget(unsigned int zone, Widget* widget){
+void WidgetsSetupView::createWidget(unsigned int zone, const char* name){
   Widget* old = container->getWidget(zone);
   if(old) delete old;
-  container->setWidget(zone, widget);
+  const WidgetFactory * factory = NULL;
+  if(name) {
+    for (auto it = getRegisteredWidgets().cbegin(); it != getRegisteredWidgets().cend(); ++it) {
+       if(strcmp(name, (*it)->getName()) == 0){
+         factory = (*it);
+         break;
+       }
+    }
+  }
+  container->createWidget(zone, factory);
   storageDirty(EE_MODEL);
 }
-void WidgetsSetupPage::displayWidgetConfig(Widget* widget)
+void WidgetsSetupView::displayWidgetConfig(Widget* widget)
 {
   if(widget && widget->getFactory()->getOptions()) {
     TabsGroup* tabsGroup = new TabsGroup();
@@ -70,32 +81,32 @@ void WidgetsSetupPage::displayWidgetConfig(Widget* widget)
   }
 }
 
-void WidgetsSetupPage::showSelectWidgetMenu(unsigned int zone)
+void WidgetsSetupView::showSelectWidgetMenu(unsigned int zone)
 {
   Menu* menu = new Menu ();
-  menu->addLine (TR_NONE, [=]() { setWidget(zone, NULL); });
+  menu->addLine (TR_NONE, [=]() { createWidget(zone, NULL); });
   for (auto it = getRegisteredWidgets().cbegin(); it != getRegisteredWidgets().cend(); ++it) {
-    menu->addLine ((*it)->getName(), [=]() {
-      Widget* widget = loadWidget((*it)->getName(), container->getZone(zone), new Widget::PersistentData());
-      setWidget(zone, widget);
+    const char * name = (*it)->getName();
+    menu->addLine (name, [=]() {
+      createWidget(zone, name);
+      Widget* widget = container->getWidget(zone);
       displayWidgetConfig(widget);
     });
   }
-
 }
-void WidgetsSetupPage::showWidgetMenu(unsigned int zone)
+void WidgetsSetupView::showWidgetMenu(unsigned int zone)
 {
   Widget* widget = container->getWidget(zone);
   if(widget) {
     Menu * menu = new Menu ();
     menu->addLine (STR_SELECT_WIDGET, [=]() { showSelectWidgetMenu(zone); });
     if (widget->getFactory()->getOptions()) menu->addLine (STR_WIDGET_SETTINGS, [=]() { displayWidgetConfig (widget); });
-    menu->addLine (STR_REMOVE_WIDGET, [=]() { setWidget(zone, NULL); });
+    menu->addLine (STR_REMOVE_WIDGET, [=]() { createWidget(zone, NULL); });
   }
   else showSelectWidgetMenu(zone);
 }
 
-bool WidgetsSetupPage::onTouchEnd(coord_t x, coord_t y)
+bool WidgetsSetupView::onTouchEnd(coord_t x, coord_t y)
 {
   for (unsigned int index=0; index < container->getZonesCount(); index++) {
     Zone zone = container->getZone(index);
@@ -106,7 +117,7 @@ bool WidgetsSetupPage::onTouchEnd(coord_t x, coord_t y)
   return true;
 }
 
-bool WidgetsSetupPage::onTouchSlide(coord_t x, coord_t y, coord_t startX, coord_t startY, coord_t slideX, coord_t slideY)
+bool WidgetsSetupView::onTouchSlide(coord_t x, coord_t y, coord_t startX, coord_t startY, coord_t slideX, coord_t slideY)
 {
   if(slideDirection == SlideDirection::None) {
     if (startX < x && (x - startX > LCD_W / 3)){
@@ -118,11 +129,11 @@ bool WidgetsSetupPage::onTouchSlide(coord_t x, coord_t y, coord_t startX, coord_
   return true;
 }
 
-uint8_t WidgetsSetupPage::currentView() {
+uint8_t WidgetsSetupView::currentView() {
   return this->index;
 }
 
-void WidgetsSetupPage::paint(BitmapBuffer * dc)
+void WidgetsSetupView::paint(BitmapBuffer * dc)
 {
   ViewMain::paint(dc);
   for (int i=container->getZonesCount()-1; i>=0; i--) {

@@ -65,6 +65,21 @@ class Layout: public WidgetsContainer<MAX_LAYOUT_ZONES, MAX_LAYOUT_OPTIONS>
 
     uint16_t navigationHeight() const;
 
+    uint16_t flightModeHeight() const
+    {
+      return isOptionSet(FlightMode) ? 10 : 0;
+    }
+
+    uint16_t trimHeight() const
+    {
+      return isOptionSet(Trims) ? 16 : 0;
+    }
+
+    uint16_t sliderHeight() const
+    {
+      return isOptionSet(Sliders) ? 16 : 0;
+    }
+
     static constexpr const char* TopBar = "Top bar";
     static constexpr const char* FlightMode = "Flight mode";
     static constexpr const char* Sliders = "Sliders";
@@ -81,23 +96,6 @@ class Layout: public WidgetsContainer<MAX_LAYOUT_ZONES, MAX_LAYOUT_OPTIONS>
       return 10;
     }
 
-    uint16_t flightModeHeight() const
-    {
-      return isOptionSet(FlightMode) ? 10 : 0;
-    }
-
-    uint16_t trimHeight() const
-    {
-      return isOptionSet(Trims) ? 16 : 0;
-    }
-
-    uint16_t sliderHeight() const
-    {
-      return isOptionSet(Sliders) ? 16 : 0;
-    }
-
-
-    void drawFlightMode(coord_t y);
     bool isOptionSet(const char* name) const;
     ZoneOptionValue* getZoneOptionValue(const char* name) const;
     const LayoutFactory * factory;
