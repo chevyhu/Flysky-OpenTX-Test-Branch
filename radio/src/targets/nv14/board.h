@@ -425,6 +425,7 @@ uint32_t lowPowerCheck(void);
 #endif
 uint8_t UsbModeSelect( uint32_t index );
 void pwrOn(void);
+void pwrSoftReboot();
 void pwrOff(void);
 void pwrResetHandler(void);
 uint32_t pwrPressed(void);

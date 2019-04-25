@@ -126,7 +126,7 @@ void RadioVersionPage::build(Window * window)
   new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26}, reusableBuffer.version.id);
   grid.nextLine();
 
-
+/*
   new TextButton(window, {LCD_W/2-125, window->height() - 150, 250, 30}, STR_QUICK_START_GUIDE, [=]() -> int8_t {
       new QR_CodeMenu(QR_CODE_QUICK_START);
       return 1;
@@ -136,13 +136,26 @@ void RadioVersionPage::build(Window * window)
       new QR_CodeMenu(QR_CODE_USER_MANUAL);
       return 1;
   });
-
-  new TextButton(window, {LCD_W/2-125, window->height() - 50, 250, 30}, STR_FACTORYRESET, [=]() -> int8_t {
-    // TODO not implemented on X12 / X10 today!
-    // POPUP_CONFIRMATION(STR_CONFIRMRESET);
-    // showMessageBox(STR_STORAGE_FORMAT);
-    storageEraseAll(false);
-    NVIC_SystemReset();
+*/
+  new TextButton(window, {LCD_W/2-125, window->height() - 100, 250, 30}, STR_FACTORYRESET, [=]() -> int8_t {
+	auto dialog = new Dialog(WARNING_TYPE_INPUT, STR_CONFIRMRESET, STR_STORAGE_FORMAT, [=]() {
+		  storageEraseAll(false);
+		  pwrSoftReboot();
+		  return 0;
+    });
+	dialog->runForever();
     return 0;
   });
+#if !defined(SIMU)
+  //STR_CONFIRMFWUPDATE, STR_FWUPDATEMESSAGE
+  new TextButton(window, {LCD_W/2-125, window->height() - 50, 250, 30}, STR_FIRMWAREUPDATE, [=]() -> int8_t {
+	  auto dialog = new Dialog(WARNING_TYPE_INPUT, STR_FIRMWAREUPDATE, STR_FW_UPDATE_QUESTION, [=]() {
+		  *((unsigned int *)(_estack)) = BOOTLOADER_MAGIC;
+		  pwrSoftReboot();
+		  return 0;
+	  });
+	  dialog->runForever();
+    return 0;
+  });
+#endif
 }
