@@ -1160,6 +1160,7 @@
 #if defined(COLORLCD)
 #define TR_EEBACKUP                    "EEPROM backup"
 #define TR_FACTORYRESET                "Factory reset"
+#define TR_FIRMWAREUPDATE              "FW update"
 #elif defined(PCBI8)
 #define TR_EEBACKUP                    TR("\001[K1 Long]: Backup", "\012[K1 Long]: EEPROM backup")
 #define TR_FACTORYRESET                TR("\001[DOWN Long]: Fact. reset", "\012[DOWN Long]: Factory reset")
@@ -1168,6 +1169,7 @@
 #define TR_FACTORYRESET                TR("\001[MENU Long]: Fact. reset", "\012[MENU Long]: Factory reset")
 #endif
 #define TR_CONFIRMRESET                TR("Erase ALL", "Erase ALL models and settings?")
+#define TR_FW_UPDATE_QUESTION          "Enter FW update mode?"
 #define TR_TO_MANY_LUA_SCRIPTS         "Too many Lua scripts!"
 
 #if defined(TELEMETRY_MAVLINK)

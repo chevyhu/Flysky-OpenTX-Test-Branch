@@ -24,8 +24,20 @@
 
 #if defined(COLORLCD)
   #define SWITCH_WARNING_LIST_X        WARNING_LINE_X
-  #define SWITCH_WARNING_LIST_Y        WARNING_LINE_Y+3*FH
-  #define SWITCH_WARNING_LIST_INTERVAL 35
+  #define SWITCH_WARNING_LIST_Y        (WARNING_LINE_Y+3*FH)
+  #if defined(PCBNV14)
+    #define SWITCH_WARNING_LIST_INTERVAL 64
+    #define SWITCH_WARNING_LIST_X_OFFSET 160
+    #define SWITCH_WARNING_W 200
+    #define	SWITCH_WARNING_H 50
+	#define LCD_SWITCH_WARN_BACKGROUND(x, y) lcd->drawFilledRect(x, y, SWITCH_WARNING_W, SWITCH_WARNING_H, SOLID, ROUND|TEXT_BGCOLOR);
+  #else
+    #define SWITCH_WARNING_LIST_INTERVAL 35
+    #define SWITCH_WARNING_LIST_X_OFFSET 0
+    #define SWITCH_WARNING_W 1
+    #define	SWITCH_WARNING_H 1
+	#define LCD_SWITCH_WARN_BACKGROUND(x, y) 
+  #endif
 #elif LCD_W >= 212
   #define SWITCH_WARNING_LIST_X        60
   #define SWITCH_WARNING_LIST_Y        4*FH+3
@@ -635,7 +647,7 @@ swsrc_t getMovedSwitch()
 #if defined(GUI)
 void checkSwitches()
 {
-  return; // TODO later ...
+//  return; // TODO later ...
 
 #if defined(MODULE_ALWAYS_SEND_PULSES)
   static swarnstate_t last_bad_switches = 0xff;
@@ -737,14 +749,15 @@ void checkSwitches()
     LED_ERROR_BEGIN();
 
     // first - display warning
-#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(PCBFLYSKY)
+#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(PCBFLYSKY) || defined(PCBNV14)
     if ((last_bad_switches != switches_states) || (last_bad_pots != bad_pots)) {
       drawAlertBox(STR_SWITCHWARN, NULL, STR_PRESSANYKEYTOSKIP);
       if (last_bad_switches == 0xff || last_bad_pots == 0xff) {
         AUDIO_ERROR_MESSAGE(AU_SWITCH_ALERT);
       }
-      int x = SWITCH_WARNING_LIST_X, y = SWITCH_WARNING_LIST_Y;
+      int x = SWITCH_WARNING_LIST_X - SWITCH_WARNING_LIST_X_OFFSET, y = SWITCH_WARNING_LIST_Y;
       int numWarnings = 0;
+	  LCD_SWITCH_WARN_BACKGROUND(1, y);
       for (int i=0; i<NUM_SWITCHES; ++i) {
 #if defined(COLORLCD)
         if (SWITCH_WARNING_ALLOWED(i)) {

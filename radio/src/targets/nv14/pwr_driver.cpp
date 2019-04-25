@@ -74,6 +74,11 @@ void pwrOn()
   boardState = BOARD_POWER_ON;
 }
 
+void pwrSoftReboot(){
+  boardState = BOARD_REBOOT;
+  NVIC_SystemReset();
+}
+
 void pwrOff()
 {
   // Shutdown the Haptic
@@ -89,6 +94,13 @@ uint32_t pwrPressed()
 
 void pwrResetHandler()
 {
+  RCC->AHB1ENR |= RCC_AHB1ENR_GPIOJEN;
+
+  // these two NOPs are needed (see STM32F errata sheet) before the peripheral
+  // register can be written after the peripheral clock was enabled
+  __ASM volatile ("nop");
+  __ASM volatile ("nop");
+
   if (boardState != BOARD_POWER_OFF) {
     powerupReason = boardState != BOARD_REBOOT && WAS_RESET_BY_WATCHDOG_OR_SOFTWARE() ? DIRTY_SHUTDOWN : ~DIRTY_SHUTDOWN;
     RCC->CSR |= RCC_CSR_RMVF; //clear all flags
