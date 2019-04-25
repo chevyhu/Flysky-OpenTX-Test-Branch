@@ -28,13 +28,15 @@
   #if defined(PCBNV14)
     #define SWITCH_WARNING_LIST_INTERVAL 64
     #define SWITCH_WARNING_LIST_X_OFFSET 160
-	#define SWITCH_WARNING_W 200
-	#define	SWITCH_WARNING_H 100
+    #define SWITCH_WARNING_W 200
+    #define	SWITCH_WARNING_H 50
+	#define LCD_SWITCH_WARN_BACKGROUND(x, y) lcd->drawFilledRect(x, y, SWITCH_WARNING_W, SWITCH_WARNING_H, SOLID, ROUND|TEXT_BGCOLOR);
   #else
     #define SWITCH_WARNING_LIST_INTERVAL 35
     #define SWITCH_WARNING_LIST_X_OFFSET 0
-	#define SWITCH_WARNING_W 1
-	#define	SWITCH_WARNING_H 1
+    #define SWITCH_WARNING_W 1
+    #define	SWITCH_WARNING_H 1
+	#define LCD_SWITCH_WARN_BACKGROUND(x, y) 
   #endif
 #elif LCD_W >= 212
   #define SWITCH_WARNING_LIST_X        60
@@ -755,7 +757,7 @@ void checkSwitches()
       }
       int x = SWITCH_WARNING_LIST_X - SWITCH_WARNING_LIST_X_OFFSET, y = SWITCH_WARNING_LIST_Y;
       int numWarnings = 0;
-	  lcd->drawFilledRect(1, y, SWITCH_WARNING_W, SWITCH_WARNING_H, SOLID, ROUND|TEXT_BGCOLOR);
+	  LCD_SWITCH_WARN_BACKGROUND(1, y);
       for (int i=0; i<NUM_SWITCHES; ++i) {
 #if defined(COLORLCD)
         if (SWITCH_WARNING_ALLOWED(i)) {
