@@ -379,7 +379,9 @@ class ModuleWindow : public Window {
       // Bind and Range buttons
       if (isModuleNeedingBindRangeButtons(moduleIndex)) {
         bindButton = new TextButton(this, grid.getFieldSlot(2, 0), STR_4BIND(STR_MODULE_BIND));
+		bindButton->setFocus();			
         bindButton->setPressHandler([=]() -> uint8_t {
+			bindButton->bringToTop();
           if (moduleFlag[moduleIndex] == MODULE_RANGECHECK) {
             rangeButton->check(false);
           }
@@ -390,12 +392,55 @@ class ModuleWindow : public Window {
               resetPulsesFlySky(moduleIndex);
             return 0;
           }
-          else {
-            bindButton->setText(STR_MODULE_BINDING);
-            moduleFlag[moduleIndex] = MODULE_BIND;
-            if (isModuleFlysky(moduleIndex))
-              onFlySkyBindReceiver(moduleIndex);
-            return 1;
+          else {	
+			  bindButton->setText(STR_MODULE_BINDING);
+			  if (isModuleR9M(moduleIndex) || (isModuleXJT(moduleIndex) && g_model.moduleData[moduleIndex].rfProtocol == RF_PROTO_X16)) {
+				  Menu * menu = new Menu();	
+				  if (isModuleR9M_LBT(moduleIndex)) {
+					  menu->addLine(STR_BINDING_25MW_CH1_8_TELEM_OFF, [=]() {
+						  onBindMenu(STR_BINDING_25MW_CH1_8_TELEM_OFF);
+					  });					  
+					  if (!IS_TELEMETRY_INTERNAL_MODULE()) {
+						  menu->addLine(STR_BINDING_25MW_CH1_8_TELEM_ON, [=]() {
+							  onBindMenu(STR_BINDING_25MW_CH1_8_TELEM_ON);
+						  });
+					  }
+					  menu->addLine(STR_BINDING_500MW_CH1_8_TELEM_OFF, [=]() {
+						  onBindMenu(STR_BINDING_500MW_CH1_8_TELEM_OFF);
+					  });
+					  menu->addLine(STR_BINDING_500MW_CH9_16_TELEM_OFF, [=]() {
+						  onBindMenu(STR_BINDING_500MW_CH9_16_TELEM_OFF);
+					  });					  
+				  }
+				  else {
+					  if (!(IS_TELEMETRY_INTERNAL_MODULE() && moduleIndex == EXTERNAL_MODULE)) {
+						  menu->addLine(STR_BINDING_1_8_TELEM_ON, [=]() {
+							  onBindMenu(STR_BINDING_1_8_TELEM_ON);
+						  });
+					  }
+					  menu->addLine(STR_BINDING_1_8_TELEM_OFF, [=]() {
+						  onBindMenu(STR_BINDING_1_8_TELEM_OFF);
+					  });
+					  
+					  if (!(IS_TELEMETRY_INTERNAL_MODULE() && moduleIndex == EXTERNAL_MODULE)) {
+						  menu->addLine(STR_BINDING_9_16_TELEM_ON, [=]() {
+							  onBindMenu(STR_BINDING_9_16_TELEM_ON);
+						  });
+					  }
+					  menu->addLine(STR_BINDING_9_16_TELEM_OFF, [=]() {
+						  onBindMenu(STR_BINDING_9_16_TELEM_OFF);
+					  });					  
+				  }
+				  return 1;
+			  }
+			  else {
+				  bindButton->setText(STR_MODULE_BINDING);
+				  moduleFlag[moduleIndex] = MODULE_BIND;
+			  }
+			  g_model.trainerMode = TRAINER_MODE_MASTER_TRAINER_JACK;
+			  if (isModuleFlysky(moduleIndex))
+				  onFlySkyBindReceiver(moduleIndex);
+			  return 1;
           }
         });
         bindButton->setCheckHandler([=]() {
@@ -456,6 +501,53 @@ class ModuleWindow : public Window {
 
       getParent()->moveWindowsTop(top(), adjustHeight());
     }
+
+	void onBindMenu(const char * result)
+	{
+		//uint8_t moduleIdx = 0; // TODO (menuVerticalPosition >= ITEM_MODEL_EXTERNAL_MODULE_LABEL ? EXTERNAL_MODULE : INTERNAL_MODULE);
+
+		if (result == STR_BINDING_25MW_CH1_8_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_25;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_25MW_CH1_8_TELEM_ON) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_25;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = false;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_500MW_CH1_8_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_500;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_500MW_CH9_16_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_500;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = true;
+		}
+		else if (result == STR_BINDING_1_8_TELEM_ON) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = false;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_1_8_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_9_16_TELEM_ON) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = false;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = true;
+		}
+		else if (result == STR_BINDING_9_16_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = true;
+		}
+		else {
+			return;
+		}
+
+		moduleFlag[moduleIndex] = MODULE_BIND;
+	}
 };
 
 ModelSetupPage::ModelSetupPage() :
@@ -465,52 +557,6 @@ ModelSetupPage::ModelSetupPage() :
 
 uint8_t g_moduleIdx;
 
-void onBindMenu(const char * result)
-{
-  uint8_t moduleIdx = 0; // TODO (menuVerticalPosition >= ITEM_MODEL_EXTERNAL_MODULE_LABEL ? EXTERNAL_MODULE : INTERNAL_MODULE);
-
-  if (result == STR_BINDING_25MW_CH1_8_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_25;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_25MW_CH1_8_TELEM_ON) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_25;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = false;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_500MW_CH1_8_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_500;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_500MW_CH9_16_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_500;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = true;
-  }
-  else if (result == STR_BINDING_1_8_TELEM_ON) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = false;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_1_8_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_9_16_TELEM_ON) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = false;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = true;
-  }
-  else if (result == STR_BINDING_9_16_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = true;
-  }
-  else {
-    return;
-  }
-
-  moduleFlag[moduleIdx] = MODULE_BIND;
-}
 void ModelSetupPage::build(Window * window)
 {
   GridLayout grid;

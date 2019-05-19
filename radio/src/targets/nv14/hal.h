@@ -388,16 +388,18 @@
 #define TRAINER_IN_GPIO_PinSource       GPIO_PinSource12
 #define TRAINER_OUT_GPIO_PIN            GPIO_Pin_13 // PD.13
 #define TRAINER_OUT_GPIO_PinSource      GPIO_PinSource13
-// #define TRAINER_DETECT_GPIO             GPIOB
-// #define TRAINER_DETECT_GPIO_PIN         GPIO_Pin_4  // PB.04
+#define TRAINER_DETECT_GPIO             GPIOB
+#define TRAINER_DETECT_GPIO_PIN         GPIO_Pin_4  // PB.04
 #define TRAINER_TIMER                   TIM4
 #define TRAINER_TIMER_IRQn              TIM4_IRQn
+#define TRAINER_TIMER_IRQHandler		TIM4_IRQHandler
+#define TRAINER_TIMER_FREQ				(PERI1_FREQUENCY * TIMER_MULT_APB1)
 #define TRAINER_GPIO_AF                 GPIO_AF_TIM4 // TIM4_CH1 (in) + TIM4_CH2 (out)
 #define TRAINER_OUT_DMA                 DMA1
 // #define TRAINER_OUT_DMA_CHANNEL         DMA_Channel_2
 // #define TRAINER_OUT_DMA_STREAM          DMA1_Stream3
 // #define TRAINER_OUT_DMA_IRQn            DMA1_Stream3_IRQn
-// #define TRAINER_OUT_DMA_IRQHandler      DMA1_Stream3_IRQHandler
+//#define TRAINER_OUT_DMA_IRQHandler      DMA1_Stream3_IRQHandler
 // #define TRAINER_OUT_DMA_FLAG_TC         DMA_IT_TCIF3
 #define TRAINER_EXTMODULE_TIMER_IRQn    TIM4_IRQn
 #define TRAINER_EXTMODULE_TIMER_IRQHandler  TIM4_IRQHandler
