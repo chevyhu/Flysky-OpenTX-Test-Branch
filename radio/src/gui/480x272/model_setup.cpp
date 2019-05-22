@@ -393,8 +393,10 @@ class ModuleWindow : public Window {
             return 0;
           }
           else {	
-			  bindButton->setText(STR_MODULE_BINDING);
 			  if (isModuleR9M(moduleIndex) || (isModuleXJT(moduleIndex) && g_model.moduleData[moduleIndex].rfProtocol == RF_PROTO_X16)) {
+                  bindButton->setText(STR_MODULE_BINDING);
+                  update();
+                  bindButton->setFocus();
 				  Menu * menu = new Menu();	
 				  if (isModuleR9M_LBT(moduleIndex)) {
 					  menu->addLine(STR_BINDING_25MW_CH1_8_TELEM_OFF, [=]() {
@@ -430,14 +432,12 @@ class ModuleWindow : public Window {
 					  menu->addLine(STR_BINDING_9_16_TELEM_OFF, [=]() {
 						  onBindMenu(STR_BINDING_9_16_TELEM_OFF);
 					  });					  
-				  }
-				  return 1;
+				  }                  
 			  }
 			  else {
 				  bindButton->setText(STR_MODULE_BINDING);
 				  moduleFlag[moduleIndex] = MODULE_BIND;
 			  }
-			  g_model.trainerMode = TRAINER_MODE_MASTER_TRAINER_JACK;
 			  if (isModuleFlysky(moduleIndex))
 				  onFlySkyBindReceiver(moduleIndex);
 			  return 1;
@@ -750,6 +750,17 @@ void ModelSetupPage::build(Window * window)
     grid.nextLine();
     grid.addWindow(new ModuleWindow(window, {0, grid.getWindowHeight(), LCD_W, 0}, EXTERNAL_MODULE));
   }
+
+#if defined(TRAINERMODULE)
+  {
+    new StaticText(window, grid.getLabelSlot(), STR_TRAINER);
+    new Choice(window, grid.getFieldSlot(), STR_VTRAINERMODES, 0, 3, GET_DEFAULT(g_model.trainerMode),
+                                 [=](int32_t newValue) {
+        g_model.trainerMode = newValue;
+        SET_DIRTY();
+    });
+  }
+#endif
 
   grid.nextLine();
 

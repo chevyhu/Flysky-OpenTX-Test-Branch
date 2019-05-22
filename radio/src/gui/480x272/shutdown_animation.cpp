@@ -42,7 +42,7 @@ void drawShutdownAnimation(uint32_t index, const char * message)
 
   if (shutdownBitmap && circleBitmap) {
     if (last_quarter < 0 || index == (PWR_PRESS_SHUTDOWN_DELAY / 5)) {
-      lcdDrawBlackOverlay();
+      //lcdDrawBlackOverlay();
       lcd->drawBitmap((LCD_W - shutdownBitmap->getWidth()) / 2, (LCD_H - shutdownBitmap->getHeight()) / 2, shutdownBitmap);
     }
     auto diameter = 2 * circleBitmap->getHeight();
