@@ -480,7 +480,7 @@ void RadioSetupPage::build(Window * window)
       resumePulses();
     });
   choice->setTextHandler([](uint8_t value) {
-    return std::to_string(1 + value) + ": left=" + std::string(&getSourceString(MIXSRC_Rud + modn12x3[4 * value])[1]) + "+" + std::string(&getSourceString(MIXSRC_Rud + modn12x3[4 * value + 1])[1]);
+    return std::to_string(1 + value) + ": left=" + std::string(&getSourceString(MIXSRC_Rud + modn12x3[4 * value])[0]) + "+" + std::string(&getSourceString(MIXSRC_Rud + modn12x3[4 * value + 1])[0]);
   });
   grid.nextLine();
   grid.nextLine();

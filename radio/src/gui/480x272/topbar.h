@@ -27,7 +27,7 @@
 #define MAX_TOPBAR_OPTIONS             1 // just because of VC++ which doesn't like 0-size arrays :(
 #define TOPBAR_ZONE_WIDTH              60
 #define TOPBAR_ZONE_MARGIN             2
-
+#define TOPBAR_ITEMS_RIGHT             130
 class Topbar: public WidgetsContainer<MAX_TOPBAR_ZONES, MAX_TOPBAR_OPTIONS>
 {
   public:

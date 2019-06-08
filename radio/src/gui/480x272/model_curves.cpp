@@ -131,7 +131,7 @@ class CurveEditWindow : public Page {
                      curveEdit->update();
                    });
       grid.nextLine();
-
+      window->adjustInnerHeight();
     }
 };
 

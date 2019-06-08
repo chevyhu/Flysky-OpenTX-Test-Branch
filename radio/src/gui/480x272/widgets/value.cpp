@@ -35,7 +35,7 @@ class ValueWidget: public Widget
 
 const ZoneOption ValueWidget::options[] = {
   { "Source", ZoneOption::Source, OPTION_VALUE_UNSIGNED(MIXSRC_Rud) },
-  { "Color", ZoneOption::Color, OPTION_VALUE_UNSIGNED(WHITE) },
+  { "Color", ZoneOption::Color, OPTION_VALUE_UNSIGNED(DEFAULT_WIDGET_TEXT_COLOR) },
   { "Shadow", ZoneOption::Bool, OPTION_VALUE_BOOL(false)  },
   { NULL, ZoneOption::Bool }
 };

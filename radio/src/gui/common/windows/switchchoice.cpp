@@ -36,6 +36,54 @@ class SwitchChoiceMenuToolbar : public MenuToolbar<SwitchChoice> {
     }
 };
 
+void SwitchChoice::checkEvents()
+{
+  Window::checkEvents();
+  if (menu != nullptr)
+  {
+    unsigned value = getValue();
+    swsrc_t val = static_cast<swsrc_t>(value);
+    swsrc_t swtch = getMovedSwitch();
+    if (!swtch) return;
+#if defined(PCBTARANIS) || defined(PCBHORUS) || defined(PCBNV14)
+    div_t info = switchInfo(swtch);
+    if (IS_CONFIG_TOGGLE(info.quot))
+    {
+      if (info.rem != 0)
+      {
+        val = (val == swtch ? swtch-2 : swtch);
+      }
+    }
+    else
+    {
+      val = swtch;
+    }
+#else
+    if (IS_CONFIG_TOGGLE(swtch) && swtch == val)
+    {
+      val = -val;
+    }
+    else
+    {
+      val = swtch;
+    }
+#endif
+
+    if (static_cast<swsrc_t>(value) != val)
+    {
+      if (isValueAvailable && !isValueAvailable(val))
+        return;
+      std::map<int, int>::iterator it = valueIndexMap.find(static_cast<int>(val));
+      if (it != valueIndexMap.end() && it->second >= 0)
+      {
+        TRACE("EVENTS CHECK - change detected");
+        setValue(static_cast<int16_t>(val));
+        menu->select(it->second);
+      }
+    }
+  }
+}
+
 void SwitchChoice::paint(BitmapBuffer * dc)
 {
   bool hasFocus = this->hasFocus();
@@ -57,12 +105,13 @@ void SwitchChoice::fillMenu(Menu * menu, std::function<bool(int16_t)> filter)
   int current = -1;
 
   menu->removeLines();
-
+  valueIndexMap.clear();
   for (int i = vmin; i <= vmax; ++i) {
     if (filter && !filter(i))
       continue;
     if (isValueAvailable && !isValueAvailable(i))
       continue;
+    valueIndexMap[i] = count;
     menu->addLine(getSwitchString(i), [=]() {
       setValue(i);
     });
@@ -80,11 +129,10 @@ void SwitchChoice::fillMenu(Menu * menu, std::function<bool(int16_t)> filter)
 bool SwitchChoice::onTouchEnd(coord_t, coord_t)
 {
   AUDIO_KEY_PRESS();
-  auto menu = new Menu();
+  menu = new Menu();
   fillMenu(menu);
-
   menu->setToolbar(new SwitchChoiceMenuToolbar(this, menu));
-
+  menu->setCloseHandler(std::bind(&SwitchChoice::deleteMenu, this));
   setFocus();
   return true;
 }

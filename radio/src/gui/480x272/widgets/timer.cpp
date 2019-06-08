@@ -35,12 +35,17 @@ class TimerWidget: public Widget
 
 const ZoneOption TimerWidget::options[] = {
   { "Timer source", ZoneOption::Timer, OPTION_VALUE_UNSIGNED(0) },
+  { "Color", ZoneOption::Color, OPTION_VALUE_UNSIGNED(DEFAULT_WIDGET_TEXT_COLOR) },
+  { "Warn Color", ZoneOption::Color, OPTION_VALUE_UNSIGNED(RED) },
   { NULL, ZoneOption::Bool }
 };
 
 void TimerWidget::refresh()
 {
   uint32_t index = persistentData->options[0].unsignedValue;
+  uint16_t textcolor = persistentData->options[1].unsignedValue;
+  uint16_t bgwarncolor = persistentData->options[2].unsignedValue;
+  
   TimerData & timerData = g_model.timers[index];
   TimerState & timerState = timersStates[index];
   
@@ -55,7 +60,8 @@ void TimerWidget::refresh()
     }
     else {
       if(timerBackground) {
-        lcd->drawMask(zone.x, zone.y, timerBackground, HEADER_BGCOLOR);
+      	lcdSetColor(bgwarncolor);
+        lcd->drawMask(zone.x, zone.y, timerBackground, CUSTOM_COLOR);
       }
     }
     if (timerData.start && timerState.val >= 0) {
@@ -69,36 +75,39 @@ void TimerWidget::refresh()
         lcd->drawMask(zone.x + 3, zone.y + 4, timerBitmap, MAINVIEW_GRAPHICS_COLOR);
       }
     }
+    lcdSetColor(textcolor);
     if (abs(timerState.val) >= 3600) {
-      drawTimer(zone.x + 70, zone.y + 31, abs(timerState.val), TEXT_COLOR | MIDSIZE | LEFT | TIMEHOUR);
+      drawTimer(zone.x + 70, zone.y + 31, abs(timerState.val), CUSTOM_COLOR | MIDSIZE | LEFT | TIMEHOUR);
     }
     else {
-      drawTimer(zone.x + 76, zone.y + 31, abs(timerState.val), TEXT_COLOR | DBLSIZE | LEFT);
+      drawTimer(zone.x + 76, zone.y + 31, abs(timerState.val), CUSTOM_COLOR | DBLSIZE | LEFT);
     }
     if (ZLEN(timerData.name) > 0) {
-      lcdDrawSizedText(zone.x + 78, zone.y + 20, timerData.name, LEN_TIMER_NAME, ZCHAR | SMLSIZE | TEXT_COLOR);
+      lcdDrawSizedText(zone.x + 78, zone.y + 20, timerData.name, LEN_TIMER_NAME, ZCHAR | SMLSIZE | CUSTOM_COLOR);
     }
-    drawStringWithIndex(zone.x + 137, zone.y + 17, "TMR", index + 1, SMLSIZE | TEXT_COLOR);
+    drawStringWithIndex(zone.x + 137, zone.y + 17, "TMR", index + 1, SMLSIZE | CUSTOM_COLOR);
   }
   else {
     if (timerState.val < 0 && timerState.val % 2) {
-      lcdDrawSolidFilledRect(zone.x, zone.y, zone.w, zone.h, HEADER_LOGO_BGCOLOR);
+    	lcdSetColor(bgwarncolor);
+      lcdDrawSolidFilledRect(zone.x, zone.y, zone.w, zone.h, CUSTOM_COLOR);
     }
-    drawStringWithIndex(zone.x + 2, zone.y, "TMR", index + 1, SMLSIZE | TEXT_INVERTED_COLOR);
+    lcdSetColor(textcolor);
+    drawStringWithIndex(zone.x + 2, zone.y, "TMR", index + 1, SMLSIZE | CUSTOM_COLOR);
     if (zone.w > 100 && zone.h > 40) {
       if (abs(timerState.val) >= 3600) {
-        drawTimer(zone.x + 3, zone.y + 16, abs(timerState.val), TEXT_INVERTED_COLOR | LEFT | TIMEHOUR);
+        drawTimer(zone.x + 3, zone.y + 16, abs(timerState.val), CUSTOM_COLOR | LEFT | TIMEHOUR);
       }
       else {
-        drawTimer(zone.x + 3, zone.y + 16, abs(timerState.val), TEXT_INVERTED_COLOR | LEFT | MIDSIZE);
+        drawTimer(zone.x + 3, zone.y + 16, abs(timerState.val), CUSTOM_COLOR | LEFT | MIDSIZE);
       }
     }
     else {
       if (abs(timerState.val) >= 3600) {
-        drawTimer(zone.x + 3, zone.y + 14, abs(timerState.val), TEXT_INVERTED_COLOR | LEFT | SMLSIZE | TIMEHOUR);
+        drawTimer(zone.x + 3, zone.y + 14, abs(timerState.val), CUSTOM_COLOR | LEFT | SMLSIZE | TIMEHOUR);
       }
       else {
-        drawTimer(zone.x + 3, zone.y + 14, abs(timerState.val), TEXT_INVERTED_COLOR | LEFT);
+        drawTimer(zone.x + 3, zone.y + 14, abs(timerState.val), CUSTOM_COLOR | LEFT);
       }
     }
   }

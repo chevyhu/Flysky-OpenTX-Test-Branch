@@ -27,6 +27,11 @@
 #include "debug.h"
 
 #define MAX_WIDGET_OPTIONS             5
+#if defined(PCBFLYSKY)
+#define DEFAULT_WIDGET_TEXT_COLOR  DARKBLUE
+#else
+#define DEFAULT_WIDGET_TEXT_COLOR  WHITE
+#endif
 
 class WidgetFactory;
 class Widget

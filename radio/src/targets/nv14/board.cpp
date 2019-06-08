@@ -79,12 +79,12 @@ void interrupt1ms()
     DEBUG_TIMER_STOP(debugTimerHaptic);
   }
 #endif
+#if !defined(SIMU) && defined (FLYSKY_HALL_STICKS)
     if (boardState == BOARD_STARTED)// && 0 == pre_scale%3)
     {
-  #if defined (FLYSKY_HALL_STICKS)
-            hall_stick_loop();
-  #endif
+      hall_stick_loop();
     }
+#endif
   if (pre_scale == 10) {
     pre_scale = 0;
 #if !defined(SIMU)
