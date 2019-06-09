@@ -20,14 +20,14 @@
 
 #include "tabsgroup.h"
 
-class QR_CodeMenu: public TabsGroup {
-  public:
-    QR_CodeMenu(uint8_t QR_Index);
+class QR_CodeMenu : public TabsGroup {
+ public:
+  QR_CodeMenu(uint8_t QR_Index);
 };
 
-class RadioVersionPage: public PageTab {
-  public:
-    RadioVersionPage();
+class RadioVersionPage : public PageTab {
+ public:
+  RadioVersionPage();
 
-    void build(Window * window) override;
+  void build(Window* window) override;
 };

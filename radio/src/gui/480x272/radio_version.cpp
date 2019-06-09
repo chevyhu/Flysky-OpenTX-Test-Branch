@@ -130,8 +130,8 @@ void RadioVersionPage::build(Window *window) {
   new TextButton(window, {LCD_W/2-125, window->height() - 100, 250, 30}, STR_FACTORYRESET, [=]() -> int8_t {
 	auto dialog = new Dialog(WARNING_TYPE_INPUT, STR_CONFIRMRESET, STR_STORAGE_FORMAT, [=]() {
 		  storageEraseAll(false);
-		  pwrSoftReboot();
-		  return 0;
+                  pwrSoftReboot();
+                  return 0;
     });
 	dialog->runForever();
     return 0;
