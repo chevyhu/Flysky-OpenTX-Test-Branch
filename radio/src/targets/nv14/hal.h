@@ -388,16 +388,18 @@
 #define TRAINER_IN_GPIO_PinSource       GPIO_PinSource12
 #define TRAINER_OUT_GPIO_PIN            GPIO_Pin_13 // PD.13
 #define TRAINER_OUT_GPIO_PinSource      GPIO_PinSource13
-// #define TRAINER_DETECT_GPIO             GPIOB
-// #define TRAINER_DETECT_GPIO_PIN         GPIO_Pin_4  // PB.04
+#define TRAINER_DETECT_GPIO             GPIOB
+#define TRAINER_DETECT_GPIO_PIN         GPIO_Pin_4  // PB.04
 #define TRAINER_TIMER                   TIM4
 #define TRAINER_TIMER_IRQn              TIM4_IRQn
+#define TRAINER_TIMER_IRQHandler		TIM4_IRQHandler
+#define TRAINER_TIMER_FREQ				(PERI1_FREQUENCY * TIMER_MULT_APB1)
 #define TRAINER_GPIO_AF                 GPIO_AF_TIM4 // TIM4_CH1 (in) + TIM4_CH2 (out)
 #define TRAINER_OUT_DMA                 DMA1
 // #define TRAINER_OUT_DMA_CHANNEL         DMA_Channel_2
 // #define TRAINER_OUT_DMA_STREAM          DMA1_Stream3
 // #define TRAINER_OUT_DMA_IRQn            DMA1_Stream3_IRQn
-// #define TRAINER_OUT_DMA_IRQHandler      DMA1_Stream3_IRQHandler
+//#define TRAINER_OUT_DMA_IRQHandler      DMA1_Stream3_IRQHandler
 // #define TRAINER_OUT_DMA_FLAG_TC         DMA_IT_TCIF3
 #define TRAINER_EXTMODULE_TIMER_IRQn    TIM4_IRQn
 #define TRAINER_EXTMODULE_TIMER_IRQHandler  TIM4_IRQHandler
@@ -412,5 +414,36 @@
 // 2MHz Timer
 #define TIMER_2MHz_RCC_APB1Periph       RCC_APB1Periph_TIM7
 #define TIMER_2MHz_TIMER                TIM7
+
+// Bluetooth
+#define BT_RCC_APB2Periph RCC_APB2Periph_USART6
+#define BT_USART USART6
+#define BT_GPIO_AF GPIO_AF_USART6
+#define BT_USART_IRQn USART6_IRQn
+#define BT_GPIO_TXRX GPIOG
+#define BT_TX_GPIO_PIN GPIO_Pin_14  // PG.14
+#define BT_RX_GPIO_PIN GPIO_Pin_9   // PG.09
+#define BT_TX_GPIO_PinSource GPIO_PinSource14
+#define BT_RX_GPIO_PinSource GPIO_PinSource9
+#define BT_USART_IRQHandler USART6_IRQHandler
+#if defined(PCBX12S)
+#if PCBREV >= 13
+#define BT_RCC_AHB1Periph (RCC_AHB1Periph_GPIOI | RCC_AHB1Periph_GPIOG)
+#define BT_EN_GPIO GPIOI
+#define BT_EN_GPIO_PIN GPIO_Pin_10  // PI.10
+#else
+#define BT_RCC_AHB1Periph (RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOG)
+#define BT_EN_GPIO GPIOA
+#define BT_EN_GPIO_PIN GPIO_Pin_6  // PA.06
+#endif
+#define BT_BRTS_GPIO GPIOG
+#define BT_BRTS_GPIO_PIN GPIO_Pin_10  // PG.10
+#define BT_BCTS_GPIO GPIOG
+#define BT_BCTS_GPIO_PIN GPIO_Pin_11  // PG.11
+#elif defined(PCBNV14)
+#define BT_RCC_AHB1Periph RCC_AHB1Periph_GPIOG
+#define BT_EN_GPIO GPIOG
+#define BT_EN_GPIO_PIN GPIO_Pin_10  // PG.10
+#endif
 
 #endif // _HAL_H_

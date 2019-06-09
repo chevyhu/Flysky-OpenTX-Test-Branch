@@ -193,10 +193,12 @@ uint8_t intmoduleGetByte(uint8_t * byte)
 }
 
 static uint8_t dmaBuffer[512] __DMA;
+uint16_t sizeNull = 0;
+uint16_t size512 = 512;
 void intmoduleSendBufferDMA(uint8_t * data, uint8_t size)
 {
   if (IS_PXX_PROTOCOL(s_current_protocol[INTERNAL_MODULE]) || IS_FLYSKY_PROTOCOL(s_current_protocol[INTERNAL_MODULE])) {
-    if (size > 0 && size < 512) {
+    if (size > sizeNull && size < size512) {
 #if !defined(SIMU)
       for (int idx = 0; idx < size; idx++) {
           dmaBuffer[idx] = data[idx];

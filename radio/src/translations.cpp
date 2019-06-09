@@ -18,133 +18,113 @@
  * GNU General Public License for more details.
  */
 
-#include "opentx.h"
 #include "translations.h"
+#include "opentx.h"
 
 #define ISTR(x) LEN_##x TR_##x
 // The non-0-terminated-strings
-const pm_char STR_OPEN9X[] PROGMEM =
-    ISTR(OFFON)
-    ISTR(MMMINV)
-    ISTR(NCHANNELS)
+const pm_char STR_OPEN9X[] PROGMEM = ISTR(OFFON) ISTR(MMMINV) ISTR(NCHANNELS)
 #if !defined(GRAPHICS)
     ISTR(VBEEPLEN)
 #endif
-    ISTR(VBEEPMODE)
+        ISTR(VBEEPMODE)
 #if defined(ROTARY_ENCODERS)
-    ISTR(VRENAVIG)
+            ISTR(VRENAVIG)
 #endif
 #if defined(ROTARY_ENCODER_NAVIGATION)
-    ISTR(VRENCODERS)
+                ISTR(VRENCODERS)
 #endif
-    ISTR(TRNMODE)
-    ISTR(TRNCHN)
+                    ISTR(TRNMODE) ISTR(TRNCHN)
 #if defined(PCBFRSKY) || defined(PCBFLYSKY)
-    ISTR(UART3MODES)
-    ISTR(SWTYPES)
-    ISTR(POTTYPES)
-    ISTR(SLIDERTYPES)
+                        ISTR(UART3MODES) ISTR(SWTYPES) ISTR(POTTYPES) ISTR(
+                            SLIDERTYPES)
 #endif
-    ISTR(VTRIMINC)
+                            ISTR(VTRIMINC)
 #if defined(CPUARM)
-    ISTR(VDISPLAYTRIMS)
+                                ISTR(VDISPLAYTRIMS)
 #endif
-    ISTR(RETA123)
-    ISTR(VPROTOS)
-    ISTR(POSNEG)
+                                    ISTR(RETA123) ISTR(VPROTOS) ISTR(POSNEG)
 #if defined(PCBSKY9X) && defined(REVX)
-    ISTR(VOUTPUT_TYPE)
+                                        ISTR(VOUTPUT_TYPE)
 #endif
-    ISTR(VBLMODE)
-    ISTR(VCURVEFUNC)
-    ISTR(VMLTPX)
-    ISTR(VMLTPX2)
-    ISTR(VMIXTRIMS)
-    ISTR(VCSWFUNC)
-    ISTR(VFSWFUNC)
-    ISTR(VFSWRESET)
-    ISTR(FUNCSOUNDS)
+                                            ISTR(VBLMODE) ISTR(VCURVEFUNC) ISTR(VMLTPX) ISTR(VMLTPX2) ISTR(
+                                                VMIXTRIMS) ISTR(VCSWFUNC) ISTR(VFSWFUNC) ISTR(VFSWRESET) ISTR(FUNCSOUNDS)
 #if !defined(CPUARM)
-    ISTR(VTELEMCHNS)
+                                                ISTR(VTELEMCHNS)
 #endif
 #if defined(TELEMETRY_FRSKY) || defined(CPUARM)
-    ISTR(VTELEMUNIT)
-    ISTR(VALARM)
-    ISTR(VALARMFN)
-    ISTR(VTELPROTO)
-    ISTR(GPSFORMAT)
-    ISTR(AMPSRC)
-    ISTR(VARIOSRC)
-    ISTR(VTELEMSCREENTYPE)
+                                                    ISTR(VTELEMUNIT) ISTR(VALARM) ISTR(VALARMFN) ISTR(VTELPROTO) ISTR(GPSFORMAT) ISTR(
+                                                        AMPSRC) ISTR(VARIOSRC) ISTR(VTELEMSCREENTYPE)
 #endif
 #if defined(TEMPLATES)
-    ISTR(VTEMPLATES)
+                                                        ISTR(VTEMPLATES)
 #endif
 #if defined(HELI)
-    ISTR(VSWASHTYPE)
+                                                            ISTR(VSWASHTYPE)
 #endif
-    ISTR(VKEYS)
-    ISTR(VSWITCHES)
-    ISTR(VSRCRAW)
+                                                                ISTR(
+                                                                    VKEYS) ISTR(VSWITCHES)
+                                                                    ISTR(
+                                                                        VSRCRAW)
 #if defined(TRANSLATIONS_CZ) && defined(CPUARM)
-    ISTR(INPUTNAMES)
+                                                                        ISTR(
+                                                                            INPUTNAMES)
 #endif
-    ISTR(VTMRMODES)
+                                                                            ISTR(
+                                                                                VTMRMODES)
 #if defined(CPUM2560) || defined(CPUARM)
-    ISTR(DATETIME)
-    ISTR(VPERSISTENT)
+                                                                                ISTR(DATETIME) ISTR(
+                                                                                    VPERSISTENT)
 #endif
 #if defined(CPUARM)
-    ISTR(VLCD)
-    ISTR(VUNITSSYSTEM)
-    ISTR(VBEEPCOUNTDOWN)
-    ISTR(COUNTDOWNVALUES)
-    ISTR(VVARIOCENTER)
+                                                                                    ISTR(VLCD) ISTR(VUNITSSYSTEM) ISTR(VBEEPCOUNTDOWN) ISTR(
+                                                                                        COUNTDOWNVALUES) ISTR(VVARIOCENTER)
 #endif
 #if defined(PXX) || defined(CPUARM)
-    ISTR(COUNTRYCODES)
-    ISTR(USBMODES)
-    ISTR(USBMODESELECT)
-    ISTR(VFAILSAFE)
+                                                                                        ISTR(COUNTRYCODES) ISTR(USBMODES) ISTR(
+                                                                                            USBMODESELECT) ISTR(VFAILSAFE)
 #endif
 #if defined(CPUARM)
-    ISTR(VTRAINERMODES)
-    ISTR(MODULE_PROTOCOLS)
-    ISTR(R9M_MODES)
-    ISTR(R9M_FCC_POWER_VALUES)
-    ISTR(R9M_LBT_POWER_VALUES)
-    ISTR(TELEMETRY_PROTOCOLS)
-    ISTR(XJT_PROTOCOLS)
-    ISTR(FLYSKY_PROTOCOLS)
-    ISTR(DSM_PROTOCOLS)
+                                                                                            ISTR(
+                                                                                                VTRAINERMODES)
+                                                                                                ISTR(MODULE_PROTOCOLS) ISTR(R9M_MODES) ISTR(R9M_FCC_POWER_VALUES) ISTR(R9M_LBT_POWER_VALUES) ISTR(TELEMETRY_PROTOCOLS) ISTR(XJT_PROTOCOLS) ISTR(
+                                                                                                    FLYSKY_PROTOCOLS) ISTR(DSM_PROTOCOLS)
 #if defined(MULTIMODULE)
-    ISTR(MULTI_PROTOCOLS)
+                                                                                                    ISTR(
+                                                                                                        MULTI_PROTOCOLS)
 #endif
-    ISTR(VOLTSRC)
-    ISTR(CURVE_TYPES)
-    ISTR(VSENSORTYPES)
-    ISTR(VFORMULAS)
-    ISTR(VPREC)
-    ISTR(VCELLINDEX)
+                                                                                                        ISTR(VOLTSRC) ISTR(
+                                                                                                            CURVE_TYPES) ISTR(VSENSORTYPES)
+                                                                                                            ISTR(VFORMULAS) ISTR(
+                                                                                                                VPREC) ISTR(VCELLINDEX)
 #if defined(BLUETOOTH)
-    ISTR(BLUETOOTH_MODES)
+                                                                                                                ISTR(
+                                                                                                                    BLUETOOTH_MODES)
 #endif
-    ISTR(VANTENNATYPES)
+                                                                                                                    ISTR(
+                                                                                                                        VANTENNATYPES)
 #endif
 #if defined(TELEMETRY_MAVLINK)
-    ISTR(MAVLINK_BAUDS)
-    ISTR(MAVLINK_AC_MODES)
-    ISTR(MAVLINK_AP_MODES)
+                                                                                                                        ISTR(
+                                                                                                                            MAVLINK_BAUDS)
+                                                                                                                            ISTR(
+                                                                                                                                MAVLINK_AC_MODES)
+                                                                                                                                ISTR(
+                                                                                                                                    MAVLINK_AP_MODES)
 #endif
     ;
+
+#ifdef CROSSFIRE_NATIVE
+const pm_char STR_CROSSFIRE_SETUP[] PROGMEM = TR_CROSSFIRE_SETUP;
+#endif
 
 // The 0-terminated-strings
 const pm_char STR_POPUPS[] PROGMEM = TR_POPUPS;
 #if !defined(OFS_EXIT)
-  const pm_char STR_EXIT[] PROGMEM = TR_EXIT;
+const pm_char STR_EXIT[] PROGMEM = TR_EXIT;
 #endif
 #if !defined(PCBHORUS)
-  const pm_char STR_MENUWHENDONE[] PROGMEM = TR_MENUWHENDONE;
+const pm_char STR_MENUWHENDONE[] PROGMEM = TR_MENUWHENDONE;
 #endif
 const pm_char STR_FREE[] PROGMEM = TR_FREE;
 const pm_char STR_DELETEMODEL[] PROGMEM = TR_DELETEMODEL;
@@ -163,7 +143,7 @@ const pm_char STR_TTRIM[] PROGMEM = TR_TTRIM;
 const pm_char STR_BEEPCTR[] PROGMEM = TR_BEEPCTR;
 const pm_char STR_USE_GLOBAL_FUNCS[] PROGMEM = TR_USE_GLOBAL_FUNCS;
 #if defined(PCBSKY9X) && defined(REVX)
-  const pm_char STR_OUTPUT_TYPE[] PROGMEM = TR_OUTPUT_TYPE;
+const pm_char STR_OUTPUT_TYPE[] PROGMEM = TR_OUTPUT_TYPE;
 #endif
 const pm_char STR_PROTO[] PROGMEM = TR_PROTO;
 const pm_char STR_PPMFRAME[] PROGMEM = TR_PPMFRAME;
@@ -356,11 +336,6 @@ const pm_char STR_MENUSETUP[] PROGMEM = TR_MENUSETUP;
 const pm_char STR_MENUFLIGHTMODE[] PROGMEM = TR_MENUFLIGHTMODE;
 const pm_char STR_MENUFLIGHTMODES[] PROGMEM = TR_MENUFLIGHTMODES;
 
-
-#ifdef CROSSFIRE_NATIVE
-const pm_char STR_CROSSFIRE_SETUP[] PROGMEM = TR_CROSSFIRE_SETUP;
-#endif
-
 #ifdef HELI
 const pm_char STR_MENUHELISETUP[] PROGMEM = TR_MENUHELISETUP;
 #endif
@@ -388,7 +363,9 @@ const pm_char STR_MENUTEMPLATES[] PROGMEM = TR_MENUTEMPLATES;
 
 const pm_char STR_MENUSTAT[] PROGMEM = TR_MENUSTAT;
 const pm_char STR_MENUDEBUG[] PROGMEM = TR_MENUDEBUG;
-const char * const STR_MONITOR_CHANNELS[] = { TR_MONITOR_CHANNELS1, TR_MONITOR_CHANNELS2, TR_MONITOR_CHANNELS3, TR_MONITOR_CHANNELS4 };
+const char* const STR_MONITOR_CHANNELS[] = {
+    TR_MONITOR_CHANNELS1, TR_MONITOR_CHANNELS2, TR_MONITOR_CHANNELS3,
+    TR_MONITOR_CHANNELS4};
 const pm_char STR_MONITOR_SWITCHES[] PROGMEM = TR_MONITOR_SWITCHES;
 const pm_char STR_MONITOR_OUTPUT_DESC[] PROGMEM = TR_MONITOR_OUTPUT_DESC;
 const pm_char STR_MONITOR_MIXER_DESC[] PROGMEM = TR_MONITOR_MIXER_DESC;
@@ -445,7 +422,7 @@ const pm_char STR_CURRENT[] PROGMEM = TR_CURRENT;
 
 #if defined(CPUARM)
 const pm_char STR_CURRENT_CALIB[] PROGMEM = TR_CURRENT_CALIB;
-const pm_char STR_UNITSSYSTEM[]   PROGMEM = TR_UNITSSYSTEM;
+const pm_char STR_UNITSSYSTEM[] PROGMEM = TR_UNITSSYSTEM;
 const pm_char STR_VOICELANG[] PROGMEM = TR_VOICELANG;
 const pm_char STR_MODELIDUSED[] PROGMEM = TR_MODELIDUSED;
 const pm_char STR_BEEP_VOLUME[] PROGMEM = INDENT TR_BEEP_VOLUME;
@@ -616,239 +593,245 @@ const pm_char STR_FIRMWAREUPDATE[] PROGMEM = TR_FIRMWAREUPDATE;
 const pm_char STR_CONFIRMRESET[] PROGMEM = TR_CONFIRMRESET;
 const pm_char STR_FW_UPDATE_QUESTION[] PROGMEM = TR_FW_UPDATE_QUESTION;
 const pm_char STR_TOO_MANY_LUA_SCRIPTS[] PROGMEM = TR_TO_MANY_LUA_SCRIPTS;
-const pm_char STR_BLCOLOR[]  PROGMEM = TR_BLCOLOR;
+const pm_char STR_BLCOLOR[] PROGMEM = TR_BLCOLOR;
 const pm_char STR_QUICK_START_GUIDE[] PROGMEM = TR_QUICK_START_GUIDE;
-const pm_char STR_USER_MANUAL[] = TR_USER_MANUAL;
-
+const pm_char STR_USER_MANUAL[] PROGMEM = TR_USER_MANUAL;
 
 #if defined(CPUARM)
-  const pm_char STR_MODELNAME[] PROGMEM = TR_MODELNAME;
-  const pm_char STR_PHASENAME[] PROGMEM = TR_PHASENAME;
-  const pm_char STR_MIXNAME[] PROGMEM = TR_MIXNAME;
-  const pm_char STR_INPUTNAME[] PROGMEM = TR_INPUTNAME;
-  const pm_char STR_EXPONAME[] PROGMEM = TR_EXPONAME;
+const pm_char STR_MODELNAME[] PROGMEM = TR_MODELNAME;
+const pm_char STR_PHASENAME[] PROGMEM = TR_PHASENAME;
+const pm_char STR_MIXNAME[] PROGMEM = TR_MIXNAME;
+const pm_char STR_INPUTNAME[] PROGMEM = TR_INPUTNAME;
+const pm_char STR_EXPONAME[] PROGMEM = TR_EXPONAME;
 #endif
 
 #if LCD_W >= 212
-  const char * const STR_PHASES_HEADERS[] = TR_PHASES_HEADERS;
-  const char * const STR_LIMITS_HEADERS[] = TR_LIMITS_HEADERS;
-  const char * const STR_LSW_HEADERS[] = TR_LSW_HEADERS;
-  const char * const STR_LSW_DESCRIPTIONS[] = TR_LSW_DESCRIPTIONS;
-  const char * const STR_GVAR_HEADERS[] = TR_GVAR_HEADERS;
+const char* const STR_PHASES_HEADERS[] = TR_PHASES_HEADERS;
+const char* const STR_LIMITS_HEADERS[] = TR_LIMITS_HEADERS;
+const char* const STR_LSW_HEADERS[] = TR_LSW_HEADERS;
+const char* const STR_LSW_DESCRIPTIONS[] = TR_LSW_DESCRIPTIONS;
+const char* const STR_GVAR_HEADERS[] = TR_GVAR_HEADERS;
 #endif
 
 #if defined(CPUARM)
-  const pm_char STR_TRAINER[] PROGMEM = TR_TRAINER;
-  const pm_char STR_MODULE_BIND[] PROGMEM  = TR_MODULE_BIND;
-  const pm_char STR_BINDING_1_8_TELEM_ON[] PROGMEM = TR_BINDING_CH1_8_TELEM_ON;
-  const pm_char STR_BINDING_1_8_TELEM_OFF[] PROGMEM = TR_BINDING_CH1_8_TELEM_OFF;
-  const pm_char STR_BINDING_9_16_TELEM_ON[] PROGMEM = TR_BINDING_CH9_16_TELEM_ON;
-  const pm_char STR_BINDING_9_16_TELEM_OFF[] PROGMEM = TR_BINDING_CH9_16_TELEM_OFF;
-  const pm_char STR_BINDING_25MW_CH1_8_TELEM_OFF[] PROGMEM = TR_BINDING_25MW_CH1_8_TELEM_OFF;
-  const pm_char STR_BINDING_25MW_CH1_8_TELEM_ON[] PROGMEM = TR_BINDING_25MW_CH1_8_TELEM_ON;
-  const pm_char STR_BINDING_500MW_CH1_8_TELEM_OFF[] PROGMEM = TR_BINDING_500MW_CH1_8_TELEM_OFF;
-  const pm_char STR_BINDING_500MW_CH9_16_TELEM_OFF[] PROGMEM = TR_BINDING_500MW_CH9_16_TELEM_OFF;
-  const pm_char STR_CHANNELRANGE[] PROGMEM = TR_CHANNELRANGE;
-  const pm_char STR_RXFREQUENCY[] PROGMEM = TR_RXFREQUENCY;
-  const pm_char STR_ANTENNASELECTION[] PROGMEM = TR_ANTENNASELECTION;
-  const pm_char STR_ANTENNACONFIRM1[] PROGMEM = TR_ANTENNACONFIRM1;
-  const pm_char STR_ANTENNACONFIRM2[] PROGMEM = TR_ANTENNACONFIRM2;
-  const pm_char STR_SET[] PROGMEM = TR_SET;
-  const pm_char STR_PREFLIGHT[] PROGMEM = TR_PREFLIGHT;
-  const pm_char STR_CHECKLIST[] PROGMEM = TR_CHECKLIST;
-  const pm_char STR_VIEW_NOTES[] PROGMEM = TR_VIEW_NOTES;
-  const pm_char STR_MODEL_SELECT[] PROGMEM = TR_MODEL_SELECT;
-  const pm_char STR_RESET_SUBMENU[] PROGMEM = TR_RESET_SUBMENU;
-  const pm_char STR_LOWALARM[] PROGMEM = TR_LOWALARM;
-  const pm_char STR_CRITICALALARM[] PROGMEM = TR_CRITICALALARM;
-  const pm_char STR_RSSIALARM_WARN[] PROGMEM = TR_RSSIALARM_WARN;
-  const pm_char STR_NO_RSSIALARM[] PROGMEM = TR_NO_RSSIALARM;
-  const pm_char STR_DISABLE_ALARM[] PROGMEM = TR_DISABLE_ALARM;
-  const pm_char STR_TELEMETRY_TYPE[] PROGMEM = TR_TELEMETRY_TYPE;
-  const pm_char STR_TELEMETRY_SENSORS[] PROGMEM = TR_TELEMETRY_SENSORS;
-  const pm_char STR_VALUE[] PROGMEM = TR_VALUE;
+const pm_char STR_TRAINER[] PROGMEM = TR_TRAINER;
+const pm_char STR_MODULE_BIND[] PROGMEM = TR_MODULE_BIND;
+const pm_char STR_BINDING_1_8_TELEM_ON[] PROGMEM = TR_BINDING_CH1_8_TELEM_ON;
+const pm_char STR_BINDING_1_8_TELEM_OFF[] PROGMEM = TR_BINDING_CH1_8_TELEM_OFF;
+const pm_char STR_BINDING_9_16_TELEM_ON[] PROGMEM = TR_BINDING_CH9_16_TELEM_ON;
+const pm_char STR_BINDING_9_16_TELEM_OFF[] PROGMEM =
+    TR_BINDING_CH9_16_TELEM_OFF;
+const pm_char STR_BINDING_25MW_CH1_8_TELEM_OFF[] PROGMEM =
+    TR_BINDING_25MW_CH1_8_TELEM_OFF;
+const pm_char STR_BINDING_25MW_CH1_8_TELEM_ON[] PROGMEM =
+    TR_BINDING_25MW_CH1_8_TELEM_ON;
+const pm_char STR_BINDING_500MW_CH1_8_TELEM_OFF[] PROGMEM =
+    TR_BINDING_500MW_CH1_8_TELEM_OFF;
+const pm_char STR_BINDING_500MW_CH9_16_TELEM_OFF[] PROGMEM =
+    TR_BINDING_500MW_CH9_16_TELEM_OFF;
+const pm_char STR_CHANNELRANGE[] PROGMEM = TR_CHANNELRANGE;
+const pm_char STR_RXFREQUENCY[] PROGMEM = TR_RXFREQUENCY;
+const pm_char STR_ANTENNASELECTION[] PROGMEM = TR_ANTENNASELECTION;
+const pm_char STR_ANTENNACONFIRM1[] PROGMEM = TR_ANTENNACONFIRM1;
+const pm_char STR_ANTENNACONFIRM2[] PROGMEM = TR_ANTENNACONFIRM2;
+const pm_char STR_SET[] PROGMEM = TR_SET;
+const pm_char STR_PREFLIGHT[] PROGMEM = TR_PREFLIGHT;
+const pm_char STR_CHECKLIST[] PROGMEM = TR_CHECKLIST;
+const pm_char STR_VIEW_NOTES[] PROGMEM = TR_VIEW_NOTES;
+const pm_char STR_MODEL_SELECT[] PROGMEM = TR_MODEL_SELECT;
+const pm_char STR_RESET_SUBMENU[] PROGMEM = TR_RESET_SUBMENU;
+const pm_char STR_LOWALARM[] PROGMEM = TR_LOWALARM;
+const pm_char STR_CRITICALALARM[] PROGMEM = TR_CRITICALALARM;
+const pm_char STR_RSSIALARM_WARN[] PROGMEM = TR_RSSIALARM_WARN;
+const pm_char STR_NO_RSSIALARM[] PROGMEM = TR_NO_RSSIALARM;
+const pm_char STR_DISABLE_ALARM[] PROGMEM = TR_DISABLE_ALARM;
+const pm_char STR_TELEMETRY_TYPE[] PROGMEM = TR_TELEMETRY_TYPE;
+const pm_char STR_TELEMETRY_SENSORS[] PROGMEM = TR_TELEMETRY_SENSORS;
+const pm_char STR_VALUE[] PROGMEM = TR_VALUE;
 const pm_char STR_REPEAT[] PROGMEM = TR_REPEAT;
 const pm_char STR_ENABLE[] PROGMEM = TR_ENABLE;
-  const pm_char STR_TOPLCDTIMER[] PROGMEM = TR_TOPLCDTIMER;
-  const pm_char STR_UNIT[] PROGMEM = TR_UNIT;
-  const pm_char STR_TELEMETRY_NEWSENSOR[] PROGMEM = TR_TELEMETRY_NEWSENSOR;
-  const pm_char STR_ID[] PROGMEM = TR_ID;
-  const pm_char STR_PRECISION[] PROGMEM = TR_PRECISION;
-  const pm_char STR_RATIO[] PROGMEM = TR_RATIO;
-  const pm_char STR_FORMULA[] PROGMEM = TR_FORMULA;
-  const pm_char STR_CELLINDEX[] PROGMEM = TR_CELLINDEX;
-  const pm_char STR_LOGS[] PROGMEM = TR_LOGS;
-  const pm_char STR_OPTIONS[] PROGMEM = TR_OPTIONS;
-  const pm_char STR_ALTSENSOR[] PROGMEM = TR_ALTSENSOR;
-  const pm_char STR_CELLSENSOR[] PROGMEM = TR_CELLSENSOR;
-  const pm_char STR_GPSSENSOR[] PROGMEM = TR_GPSSENSOR;
-  const pm_char STR_CURRENTSENSOR[] PROGMEM = TR_CURRENTSENSOR;
-  const pm_char STR_AUTOOFFSET[] PROGMEM = TR_AUTOOFFSET;
-  const pm_char STR_ONLYPOSITIVE[] PROGMEM = TR_ONLYPOSITIVE;
-  const pm_char STR_FILTER[] PROGMEM = TR_FILTER;
-  const pm_char STR_TELEMETRYFULL[] PROGMEM = TR_TELEMETRYFULL;
-  const pm_char STR_SERVOS_OK[] PROGMEM = TR_SERVOS_OK;
-  const pm_char STR_SERVOS_KO[] PROGMEM = TR_SERVOS_KO;
-  const pm_char STR_INVERTED_SERIAL[] PROGMEM = TR_INVERTED_SERIAL;
-  const pm_char STR_IGNORE_INSTANCE[] PROGMEM = TR_IGNORE_INSTANCE;
-  const pm_char STR_DISCOVER_SENSORS[] PROGMEM = TR_DISCOVER_SENSORS;
-  const pm_char STR_STOP_DISCOVER_SENSORS[] PROGMEM = TR_STOP_DISCOVER_SENSORS;
-  const pm_char STR_DELETE_ALL_SENSORS[] PROGMEM = TR_DELETE_ALL_SENSORS;
-  const pm_char STR_CONFIRMDELETE[] PROGMEM = TR_CONFIRMDELETE;
-  const pm_char STR_SELECT_WIDGET[] PROGMEM = TR_SELECT_WIDGET;
-  const pm_char STR_REMOVE_WIDGET[] PROGMEM = TR_REMOVE_WIDGET;
-  const pm_char STR_WIDGET_SETTINGS[] PROGMEM = TR_WIDGET_SETTINGS;
-  const pm_char STR_REMOVE_SCREEN[] PROGMEM = TR_REMOVE_SCREEN;
-  const pm_char STR_SETUP_WIDGETS[] PROGMEM = TR_SETUP_WIDGETS;
-  const pm_char STR_USER_INTERFACE[] PROGMEM = TR_USER_INTERFACE;
-  const pm_char STR_THEME[] PROGMEM = TR_THEME;
-  const pm_char STR_SETUP[] PROGMEM = TR_SETUP;
-  const pm_char STR_MAINVIEWX[] PROGMEM = TR_MAINVIEWX;
-  const pm_char STR_LAYOUT[] PROGMEM = TR_LAYOUT;
-  const pm_char STR_ADDMAINVIEW[] PROGMEM = TR_ADDMAINVIEW;
-  const pm_char STR_BACKGROUND_COLOR[] PROGMEM = TR_BACKGROUND_COLOR;
-  const pm_char STR_MAIN_COLOR[] PROGMEM = TR_MAIN_COLOR;
-  const pm_char STR_MULTI_RFPOWER[] PROGMEM = TR_MULTI_RFPOWER;
+const pm_char STR_TOPLCDTIMER[] PROGMEM = TR_TOPLCDTIMER;
+const pm_char STR_UNIT[] PROGMEM = TR_UNIT;
+const pm_char STR_TELEMETRY_NEWSENSOR[] PROGMEM = TR_TELEMETRY_NEWSENSOR;
+const pm_char STR_ID[] PROGMEM = TR_ID;
+const pm_char STR_PRECISION[] PROGMEM = TR_PRECISION;
+const pm_char STR_RATIO[] PROGMEM = TR_RATIO;
+const pm_char STR_FORMULA[] PROGMEM = TR_FORMULA;
+const pm_char STR_CELLINDEX[] PROGMEM = TR_CELLINDEX;
+const pm_char STR_LOGS[] PROGMEM = TR_LOGS;
+const pm_char STR_OPTIONS[] PROGMEM = TR_OPTIONS;
+const pm_char STR_ALTSENSOR[] PROGMEM = TR_ALTSENSOR;
+const pm_char STR_CELLSENSOR[] PROGMEM = TR_CELLSENSOR;
+const pm_char STR_GPSSENSOR[] PROGMEM = TR_GPSSENSOR;
+const pm_char STR_CURRENTSENSOR[] PROGMEM = TR_CURRENTSENSOR;
+const pm_char STR_AUTOOFFSET[] PROGMEM = TR_AUTOOFFSET;
+const pm_char STR_ONLYPOSITIVE[] PROGMEM = TR_ONLYPOSITIVE;
+const pm_char STR_FILTER[] PROGMEM = TR_FILTER;
+const pm_char STR_TELEMETRYFULL[] PROGMEM = TR_TELEMETRYFULL;
+const pm_char STR_SERVOS_OK[] PROGMEM = TR_SERVOS_OK;
+const pm_char STR_SERVOS_KO[] PROGMEM = TR_SERVOS_KO;
+const pm_char STR_INVERTED_SERIAL[] PROGMEM = TR_INVERTED_SERIAL;
+const pm_char STR_IGNORE_INSTANCE[] PROGMEM = TR_IGNORE_INSTANCE;
+const pm_char STR_DISCOVER_SENSORS[] PROGMEM = TR_DISCOVER_SENSORS;
+const pm_char STR_STOP_DISCOVER_SENSORS[] PROGMEM = TR_STOP_DISCOVER_SENSORS;
+const pm_char STR_DELETE_ALL_SENSORS[] PROGMEM = TR_DELETE_ALL_SENSORS;
+const pm_char STR_CONFIRMDELETE[] PROGMEM = TR_CONFIRMDELETE;
+const pm_char STR_SELECT_WIDGET[] PROGMEM = TR_SELECT_WIDGET;
+const pm_char STR_REMOVE_WIDGET[] PROGMEM = TR_REMOVE_WIDGET;
+const pm_char STR_WIDGET_SETTINGS[] PROGMEM = TR_WIDGET_SETTINGS;
+const pm_char STR_REMOVE_SCREEN[] PROGMEM = TR_REMOVE_SCREEN;
+const pm_char STR_SETUP_WIDGETS[] PROGMEM = TR_SETUP_WIDGETS;
+const pm_char STR_USER_INTERFACE[] PROGMEM = TR_USER_INTERFACE;
+const pm_char STR_THEME[] PROGMEM = TR_THEME;
+const pm_char STR_SETUP[] PROGMEM = TR_SETUP;
+const pm_char STR_MAINVIEWX[] PROGMEM = TR_MAINVIEWX;
+const pm_char STR_LAYOUT[] PROGMEM = TR_LAYOUT;
+const pm_char STR_ADDMAINVIEW[] PROGMEM = TR_ADDMAINVIEW;
+const pm_char STR_BACKGROUND_COLOR[] PROGMEM = TR_BACKGROUND_COLOR;
+const pm_char STR_MAIN_COLOR[] PROGMEM = TR_MAIN_COLOR;
+const pm_char STR_MULTI_RFPOWER[] PROGMEM = TR_MULTI_RFPOWER;
 #endif
 
 #if defined(CPUARM)
-  const pm_char STR_BYTES[] PROGMEM = TR_BYTES;
-  const pm_char STR_ANTENNAPROBLEM[] PROGMEM = TR_ANTENNAPROBLEM;
-  const pm_char STR_MODULE[] PROGMEM = TR_MODULE;
-  const pm_char STR_ENABLE_POPUP[] PROGMEM = TR_ENABLE_POPUP;
-  const pm_char STR_DISABLE_POPUP[] PROGMEM = TR_DISABLE_POPUP;
-  const pm_char STR_POPUP[] PROGMEM = TR_POPUP;
-  const pm_char STR_MIN[] PROGMEM = TR_MIN;
-  const pm_char STR_MAX[] PROGMEM = TR_MAX;
-  const pm_char STR_CURVE_PRESET[] PROGMEM = TR_CURVE_PRESET;
-  const pm_char STR_PRESET[] PROGMEM = TR_PRESET;
-  const pm_char STR_MIRROR[] PROGMEM = TR_MIRROR;
-  const pm_char STR_CLEAR[] PROGMEM = TR_CLEAR;
-  const pm_char STR_RESET[] PROGMEM = TR_RESET;
-  const pm_char STR_COUNT[] PROGMEM = TR_COUNT;
-  const pm_char STR_PT[] PROGMEM = TR_PT;
-  const pm_char STR_PTS[] PROGMEM = TR_PTS;
-  const pm_char STR_SMOOTH[] PROGMEM = TR_SMOOTH;
-  const pm_char STR_COPY_STICKS_TO_OFS[] PROGMEM = TR_COPY_STICKS_TO_OFS;
-  const pm_char STR_COPY_TRIMS_TO_OFS[] PROGMEM = TR_COPY_TRIMS_TO_OFS;
-  const pm_char STR_INCDEC[] PROGMEM = TR_INCDEC;
-  const pm_char STR_GLOBALVAR[] PROGMEM = TR_GLOBALVAR;
-  const pm_char STR_MIXSOURCE[] PROGMEM = TR_MIXSOURCE;
-  const pm_char STR_CONSTANT[] PROGMEM = TR_CONSTANT;
-  const pm_char STR_TOP_BAR[] PROGMEM = TR_TOP_BAR;
-  const pm_char STR_ALTITUDE[] PROGMEM = TR_ALTITUDE;
-  const pm_char STR_SCALE[] PROGMEM = TR_SCALE;
-  const pm_char STR_VIEW_CHANNELS[] PROGMEM = TR_VIEW_CHANNELS;
-  const pm_char STR_UART3MODE[] PROGMEM = TR_UART3MODE;
-  const pm_char STR_THROTTLE_LABEL[] PROGMEM = TR_THROTTLE_LABEL;
-  const pm_char STR_SCRIPT[] PROGMEM = TR_SCRIPT;
-  const pm_char STR_INPUTS[] PROGMEM = TR_INPUTS;
-  const pm_char STR_OUTPUTS[] PROGMEM = TR_OUTPUTS;
-  const pm_char STR_MENU_INPUTS[] PROGMEM = TR_MENU_INPUTS;
-  const pm_char STR_MENU_LUA[] PROGMEM = TR_MENU_LUA;
-  const pm_char STR_MENU_STICKS[] PROGMEM = TR_MENU_STICKS;
-  const pm_char STR_MENU_POTS[] PROGMEM = TR_MENU_POTS;
-  const pm_char STR_MENU_MAX[] PROGMEM = TR_MENU_MAX;
-  const pm_char STR_MENU_HELI[] PROGMEM = TR_MENU_HELI;
-  const pm_char STR_MENU_TRIMS[] PROGMEM = TR_MENU_TRIMS;
-  const pm_char STR_MENU_SWITCHES[] PROGMEM = TR_MENU_SWITCHES;
-  const pm_char STR_MENU_LOGICAL_SWITCHES[] PROGMEM = TR_MENU_LOGICAL_SWITCHES;
-  const pm_char STR_MENU_TRAINER[] PROGMEM = TR_MENU_TRAINER;
-  const pm_char STR_MENU_CHANNELS[] PROGMEM = TR_MENU_CHANNELS;
-  const pm_char STR_MENU_GVARS[] PROGMEM = TR_MENU_GVARS;
-  const pm_char STR_MENU_TELEMETRY[] PROGMEM = TR_MENU_TELEMETRY;
-  const pm_char STR_MENU_DISPLAY[] PROGMEM = TR_MENU_DISPLAY;
-  const pm_char STR_MENU_OTHER[] PROGMEM = TR_MENU_OTHER;
-  const pm_char STR_MENU_INVERT[] PROGMEM = TR_MENU_INVERT;
-  const pm_char STR_JITTER_FILTER[] PROGMEM = TR_JITTER_FILTER;
+const pm_char STR_BYTES[] PROGMEM = TR_BYTES;
+const pm_char STR_ANTENNAPROBLEM[] PROGMEM = TR_ANTENNAPROBLEM;
+const pm_char STR_MODULE[] PROGMEM = TR_MODULE;
+const pm_char STR_ENABLE_POPUP[] PROGMEM = TR_ENABLE_POPUP;
+const pm_char STR_DISABLE_POPUP[] PROGMEM = TR_DISABLE_POPUP;
+const pm_char STR_POPUP[] PROGMEM = TR_POPUP;
+const pm_char STR_MIN[] PROGMEM = TR_MIN;
+const pm_char STR_MAX[] PROGMEM = TR_MAX;
+const pm_char STR_CURVE_PRESET[] PROGMEM = TR_CURVE_PRESET;
+const pm_char STR_PRESET[] PROGMEM = TR_PRESET;
+const pm_char STR_MIRROR[] PROGMEM = TR_MIRROR;
+const pm_char STR_CLEAR[] PROGMEM = TR_CLEAR;
+const pm_char STR_RESET[] PROGMEM = TR_RESET;
+const pm_char STR_COUNT[] PROGMEM = TR_COUNT;
+const pm_char STR_PT[] PROGMEM = TR_PT;
+const pm_char STR_PTS[] PROGMEM = TR_PTS;
+const pm_char STR_SMOOTH[] PROGMEM = TR_SMOOTH;
+const pm_char STR_COPY_STICKS_TO_OFS[] PROGMEM = TR_COPY_STICKS_TO_OFS;
+const pm_char STR_COPY_TRIMS_TO_OFS[] PROGMEM = TR_COPY_TRIMS_TO_OFS;
+const pm_char STR_INCDEC[] PROGMEM = TR_INCDEC;
+const pm_char STR_GLOBALVAR[] PROGMEM = TR_GLOBALVAR;
+const pm_char STR_MIXSOURCE[] PROGMEM = TR_MIXSOURCE;
+const pm_char STR_CONSTANT[] PROGMEM = TR_CONSTANT;
+const pm_char STR_TOP_BAR[] PROGMEM = TR_TOP_BAR;
+const pm_char STR_ALTITUDE[] PROGMEM = TR_ALTITUDE;
+const pm_char STR_SCALE[] PROGMEM = TR_SCALE;
+const pm_char STR_VIEW_CHANNELS[] PROGMEM = TR_VIEW_CHANNELS;
+const pm_char STR_UART3MODE[] PROGMEM = TR_UART3MODE;
+const pm_char STR_THROTTLE_LABEL[] PROGMEM = TR_THROTTLE_LABEL;
+const pm_char STR_SCRIPT[] PROGMEM = TR_SCRIPT;
+const pm_char STR_INPUTS[] PROGMEM = TR_INPUTS;
+const pm_char STR_OUTPUTS[] PROGMEM = TR_OUTPUTS;
+const pm_char STR_MENU_INPUTS[] PROGMEM = TR_MENU_INPUTS;
+const pm_char STR_MENU_LUA[] PROGMEM = TR_MENU_LUA;
+const pm_char STR_MENU_STICKS[] PROGMEM = TR_MENU_STICKS;
+const pm_char STR_MENU_POTS[] PROGMEM = TR_MENU_POTS;
+const pm_char STR_MENU_MAX[] PROGMEM = TR_MENU_MAX;
+const pm_char STR_MENU_HELI[] PROGMEM = TR_MENU_HELI;
+const pm_char STR_MENU_TRIMS[] PROGMEM = TR_MENU_TRIMS;
+const pm_char STR_MENU_SWITCHES[] PROGMEM = TR_MENU_SWITCHES;
+const pm_char STR_MENU_LOGICAL_SWITCHES[] PROGMEM = TR_MENU_LOGICAL_SWITCHES;
+const pm_char STR_MENU_TRAINER[] PROGMEM = TR_MENU_TRAINER;
+const pm_char STR_MENU_CHANNELS[] PROGMEM = TR_MENU_CHANNELS;
+const pm_char STR_MENU_GVARS[] PROGMEM = TR_MENU_GVARS;
+const pm_char STR_MENU_TELEMETRY[] PROGMEM = TR_MENU_TELEMETRY;
+const pm_char STR_MENU_DISPLAY[] PROGMEM = TR_MENU_DISPLAY;
+const pm_char STR_MENU_OTHER[] PROGMEM = TR_MENU_OTHER;
+const pm_char STR_MENU_INVERT[] PROGMEM = TR_MENU_INVERT;
+const pm_char STR_JITTER_FILTER[] PROGMEM = TR_JITTER_FILTER;
 #endif
 
 #if MENUS_LOCK == 1
-  const pm_char STR_UNLOCKED[] PROGMEM = TR_UNLOCKED;
-  const pm_char STR_MODS_FORBIDDEN[] PROGMEM = TR_MODS_FORBIDDEN;
+const pm_char STR_UNLOCKED[] PROGMEM = TR_UNLOCKED;
+const pm_char STR_MODS_FORBIDDEN[] PROGMEM = TR_MODS_FORBIDDEN;
 #endif
 
 #if defined(PCBTARANIS) || defined(DSM2)
-  const pm_char STR_MODULE_RANGE[] PROGMEM = TR_MODULE_RANGE;
+const pm_char STR_MODULE_RANGE[] PROGMEM = TR_MODULE_RANGE;
 #endif
 
 #if defined(BLUETOOTH)
-  const pm_char STR_BLUETOOTH[] PROGMEM = TR_BLUETOOTH;
-  const pm_char STR_BLUETOOTH_DISC[] PROGMEM = TR_BLUETOOTH_DISC;
-  const pm_char STR_BLUETOOTH_INIT[] PROGMEM = TR_BLUETOOTH_INIT;
-  const pm_char STR_BLUETOOTH_DIST_ADDR[] PROGMEM = TR_BLUETOOTH_DIST_ADDR;
-  const pm_char STR_BLUETOOTH_LOCAL_ADDR[] PROGMEM = TR_BLUETOOTH_LOCAL_ADDR;
-  const pm_char STR_BLUETOOTH_PIN_CODE[] PROGMEM = TR_BLUETOOTH_PIN_CODE;
+const pm_char STR_BLUETOOTH[] PROGMEM = TR_BLUETOOTH;
+const pm_char STR_BLUETOOTH_DISC[] PROGMEM = TR_BLUETOOTH_DISC;
+const pm_char STR_BLUETOOTH_INIT[] PROGMEM = TR_BLUETOOTH_INIT;
+const pm_char STR_BLUETOOTH_DIST_ADDR[] PROGMEM = TR_BLUETOOTH_DIST_ADDR;
+const pm_char STR_BLUETOOTH_LOCAL_ADDR[] PROGMEM = TR_BLUETOOTH_LOCAL_ADDR;
+const pm_char STR_BLUETOOTH_PIN_CODE[] PROGMEM = TR_BLUETOOTH_PIN_CODE;
 #endif
 
 #if defined(TELEMETRY_MAVLINK)
-  const pm_char STR_MAVLINK_RC_RSSI_SCALE_LABEL[] PROGMEM = TR_MAVLINK_RC_RSSI_SCALE_LABEL;
-  const pm_char STR_MAVLINK_PC_RSSI_EN_LABEL[] PROGMEM = TR_MAVLINK_PC_RSSI_EN_LABEL;
-  const pm_char STR_MAVMENUSETUP_TITLE[] PROGMEM = TR_MAVMENUSETUP_TITLE;
-  const pm_char STR_MAVLINK_BAUD_LABEL[] PROGMEM = TR_MAVLINK_BAUD_LABEL;
-  const pm_char STR_MAVLINK_INFOS[] PROGMEM = TR_MAVLINK_INFOS;
-  const pm_char STR_MAVLINK_MODE[] PROGMEM = TR_MAVLINK_MODE;
-  const pm_char STR_MAVLINK_CUR_MODE[] PROGMEM = TR_MAVLINK_CUR_MODE;
-  const pm_char STR_MAVLINK_ARMED[] PROGMEM = TR_MAVLINK_ARMED;
-  const pm_char STR_MAVLINK_BAT_MENU_TITLE[] PROGMEM = TR_MAVLINK_BAT_MENU_TITLE;
-  const pm_char STR_MAVLINK_BATTERY_LABEL[] PROGMEM = TR_MAVLINK_BATTERY_LABEL;
-  const pm_char STR_MAVLINK_RC_RSSI_LABEL[] PROGMEM = TR_MAVLINK_RC_RSSI_LABEL;
-  const pm_char STR_MAVLINK_PC_RSSI_LABEL[] PROGMEM = TR_MAVLINK_PC_RSSI_LABEL;
-  const pm_char STR_MAVLINK_NAV_MENU_TITLE[] PROGMEM = TR_MAVLINK_NAV_MENU_TITLE;
-  const pm_char STR_MAVLINK_COURSE[] PROGMEM = TR_MAVLINK_COURSE;
-  const pm_char STR_MAVLINK_HEADING[] PROGMEM = TR_MAVLINK_HEADING;
-  const pm_char STR_MAVLINK_BEARING[] PROGMEM = TR_MAVLINK_BEARING;
-  const pm_char STR_MAVLINK_ALTITUDE[] PROGMEM = TR_MAVLINK_ALTITUDE;
-  const pm_char STR_MAVLINK_GPS[] PROGMEM = TR_MAVLINK_GPS;
-  const pm_char STR_MAVLINK_NO_FIX[] PROGMEM = TR_MAVLINK_NO_FIX;
-  const pm_char STR_MAVLINK_SAT[] PROGMEM = TR_MAVLINK_SAT;
-  const pm_char STR_MAVLINK_HDOP[] PROGMEM = TR_MAVLINK_HDOP;
-  const pm_char STR_MAVLINK_LAT[] PROGMEM = TR_MAVLINK_LAT;
-  const pm_char STR_MAVLINK_LON[] PROGMEM = TR_MAVLINK_LON;
+const pm_char STR_MAVLINK_RC_RSSI_SCALE_LABEL[] PROGMEM =
+    TR_MAVLINK_RC_RSSI_SCALE_LABEL;
+const pm_char STR_MAVLINK_PC_RSSI_EN_LABEL[] PROGMEM =
+    TR_MAVLINK_PC_RSSI_EN_LABEL;
+const pm_char STR_MAVMENUSETUP_TITLE[] PROGMEM = TR_MAVMENUSETUP_TITLE;
+const pm_char STR_MAVLINK_BAUD_LABEL[] PROGMEM = TR_MAVLINK_BAUD_LABEL;
+const pm_char STR_MAVLINK_INFOS[] PROGMEM = TR_MAVLINK_INFOS;
+const pm_char STR_MAVLINK_MODE[] PROGMEM = TR_MAVLINK_MODE;
+const pm_char STR_MAVLINK_CUR_MODE[] PROGMEM = TR_MAVLINK_CUR_MODE;
+const pm_char STR_MAVLINK_ARMED[] PROGMEM = TR_MAVLINK_ARMED;
+const pm_char STR_MAVLINK_BAT_MENU_TITLE[] PROGMEM = TR_MAVLINK_BAT_MENU_TITLE;
+const pm_char STR_MAVLINK_BATTERY_LABEL[] PROGMEM = TR_MAVLINK_BATTERY_LABEL;
+const pm_char STR_MAVLINK_RC_RSSI_LABEL[] PROGMEM = TR_MAVLINK_RC_RSSI_LABEL;
+const pm_char STR_MAVLINK_PC_RSSI_LABEL[] PROGMEM = TR_MAVLINK_PC_RSSI_LABEL;
+const pm_char STR_MAVLINK_NAV_MENU_TITLE[] PROGMEM = TR_MAVLINK_NAV_MENU_TITLE;
+const pm_char STR_MAVLINK_COURSE[] PROGMEM = TR_MAVLINK_COURSE;
+const pm_char STR_MAVLINK_HEADING[] PROGMEM = TR_MAVLINK_HEADING;
+const pm_char STR_MAVLINK_BEARING[] PROGMEM = TR_MAVLINK_BEARING;
+const pm_char STR_MAVLINK_ALTITUDE[] PROGMEM = TR_MAVLINK_ALTITUDE;
+const pm_char STR_MAVLINK_GPS[] PROGMEM = TR_MAVLINK_GPS;
+const pm_char STR_MAVLINK_NO_FIX[] PROGMEM = TR_MAVLINK_NO_FIX;
+const pm_char STR_MAVLINK_SAT[] PROGMEM = TR_MAVLINK_SAT;
+const pm_char STR_MAVLINK_HDOP[] PROGMEM = TR_MAVLINK_HDOP;
+const pm_char STR_MAVLINK_LAT[] PROGMEM = TR_MAVLINK_LAT;
+const pm_char STR_MAVLINK_LON[] PROGMEM = TR_MAVLINK_LON;
 #endif
 
 #if !defined(CPUM64)
-  const pm_char STR_ABOUTUS[] PROGMEM = TR_ABOUTUS;
-  const pm_char STR_ABOUT_OPENTX_1[] PROGMEM = TR_ABOUT_OPENTX_1;
-  const pm_char STR_ABOUT_OPENTX_2[] PROGMEM = TR_ABOUT_OPENTX_2;
-  const pm_char STR_ABOUT_OPENTX_3[] PROGMEM = TR_ABOUT_OPENTX_3;
-  const pm_char STR_ABOUT_OPENTX_4[] PROGMEM = TR_ABOUT_OPENTX_4;
-  const pm_char STR_ABOUT_OPENTX_5[] PROGMEM = TR_ABOUT_OPENTX_5;
+const pm_char STR_ABOUTUS[] PROGMEM = TR_ABOUTUS;
+const pm_char STR_ABOUT_OPENTX_1[] PROGMEM = TR_ABOUT_OPENTX_1;
+const pm_char STR_ABOUT_OPENTX_2[] PROGMEM = TR_ABOUT_OPENTX_2;
+const pm_char STR_ABOUT_OPENTX_3[] PROGMEM = TR_ABOUT_OPENTX_3;
+const pm_char STR_ABOUT_OPENTX_4[] PROGMEM = TR_ABOUT_OPENTX_4;
+const pm_char STR_ABOUT_OPENTX_5[] PROGMEM = TR_ABOUT_OPENTX_5;
 
-  const pm_char STR_ABOUT_BERTRAND_1[] PROGMEM = TR_ABOUT_BERTRAND_1;
-  const pm_char STR_ABOUT_BERTRAND_2[] PROGMEM = TR_ABOUT_BERTRAND_2;
-  const pm_char STR_ABOUT_BERTRAND_3[] PROGMEM = TR_ABOUT_BERTRAND_3;
+const pm_char STR_ABOUT_BERTRAND_1[] PROGMEM = TR_ABOUT_BERTRAND_1;
+const pm_char STR_ABOUT_BERTRAND_2[] PROGMEM = TR_ABOUT_BERTRAND_2;
+const pm_char STR_ABOUT_BERTRAND_3[] PROGMEM = TR_ABOUT_BERTRAND_3;
 
-  const pm_char STR_ABOUT_MIKE_1[] PROGMEM = TR_ABOUT_MIKE_1;
-  const pm_char STR_ABOUT_MIKE_2[] PROGMEM = TR_ABOUT_MIKE_2;
-  const pm_char STR_ABOUT_MIKE_3[] PROGMEM = TR_ABOUT_MIKE_3;
-  const pm_char STR_ABOUT_MIKE_4[] PROGMEM = TR_ABOUT_MIKE_4;
+const pm_char STR_ABOUT_MIKE_1[] PROGMEM = TR_ABOUT_MIKE_1;
+const pm_char STR_ABOUT_MIKE_2[] PROGMEM = TR_ABOUT_MIKE_2;
+const pm_char STR_ABOUT_MIKE_3[] PROGMEM = TR_ABOUT_MIKE_3;
+const pm_char STR_ABOUT_MIKE_4[] PROGMEM = TR_ABOUT_MIKE_4;
 
-  const pm_char STR_ABOUT_ROMOLO_1[] PROGMEM = TR_ABOUT_ROMOLO_1;
-  const pm_char STR_ABOUT_ROMOLO_2[] PROGMEM = TR_ABOUT_ROMOLO_2;
-  const pm_char STR_ABOUT_ROMOLO_3[] PROGMEM = TR_ABOUT_ROMOLO_3;
+const pm_char STR_ABOUT_ROMOLO_1[] PROGMEM = TR_ABOUT_ROMOLO_1;
+const pm_char STR_ABOUT_ROMOLO_2[] PROGMEM = TR_ABOUT_ROMOLO_2;
+const pm_char STR_ABOUT_ROMOLO_3[] PROGMEM = TR_ABOUT_ROMOLO_3;
 
-  const pm_char STR_ABOUT_ANDRE_1[] PROGMEM = TR_ABOUT_ANDRE_1;
-  const pm_char STR_ABOUT_ANDRE_2[] PROGMEM = TR_ABOUT_ANDRE_2;
-  const pm_char STR_ABOUT_ANDRE_3[] PROGMEM = TR_ABOUT_ANDRE_3;
+const pm_char STR_ABOUT_ANDRE_1[] PROGMEM = TR_ABOUT_ANDRE_1;
+const pm_char STR_ABOUT_ANDRE_2[] PROGMEM = TR_ABOUT_ANDRE_2;
+const pm_char STR_ABOUT_ANDRE_3[] PROGMEM = TR_ABOUT_ANDRE_3;
 
-  const pm_char STR_ABOUT_ROB_1[] PROGMEM = TR_ABOUT_ROB_1;
-  const pm_char STR_ABOUT_ROB_2[] PROGMEM = TR_ABOUT_ROB_2;
+const pm_char STR_ABOUT_ROB_1[] PROGMEM = TR_ABOUT_ROB_1;
+const pm_char STR_ABOUT_ROB_2[] PROGMEM = TR_ABOUT_ROB_2;
 
-  const pm_char STR_ABOUT_MARTIN_1[] PROGMEM = TR_ABOUT_MARTIN_1;
-  const pm_char STR_ABOUT_MARTIN_2[] PROGMEM = TR_ABOUT_MARTIN_2;
+const pm_char STR_ABOUT_MARTIN_1[] PROGMEM = TR_ABOUT_MARTIN_1;
+const pm_char STR_ABOUT_MARTIN_2[] PROGMEM = TR_ABOUT_MARTIN_2;
 
-  const pm_char STR_ABOUT_KJELL_1[] PROGMEM = TR_ABOUT_KJELL_1;
-  const pm_char STR_ABOUT_KJELL_2[] PROGMEM = TR_ABOUT_KJELL_2;
-  const pm_char STR_ABOUT_KJELL_3[] PROGMEM = TR_ABOUT_KJELL_3;
-  const pm_char STR_ABOUT_KJELL_4[] PROGMEM = TR_ABOUT_KJELL_4;
+const pm_char STR_ABOUT_KJELL_1[] PROGMEM = TR_ABOUT_KJELL_1;
+const pm_char STR_ABOUT_KJELL_2[] PROGMEM = TR_ABOUT_KJELL_2;
+const pm_char STR_ABOUT_KJELL_3[] PROGMEM = TR_ABOUT_KJELL_3;
+const pm_char STR_ABOUT_KJELL_4[] PROGMEM = TR_ABOUT_KJELL_4;
 
-  const pm_char STR_ABOUT_HARDWARE_1[] PROGMEM = TR_ABOUT_HARDWARE_1;
-  const pm_char STR_ABOUT_HARDWARE_2[] PROGMEM = TR_ABOUT_HARDWARE_2;
-  const pm_char STR_ABOUT_HARDWARE_3[] PROGMEM = TR_ABOUT_HARDWARE_3;
+const pm_char STR_ABOUT_HARDWARE_1[] PROGMEM = TR_ABOUT_HARDWARE_1;
+const pm_char STR_ABOUT_HARDWARE_2[] PROGMEM = TR_ABOUT_HARDWARE_2;
+const pm_char STR_ABOUT_HARDWARE_3[] PROGMEM = TR_ABOUT_HARDWARE_3;
 
-  const pm_char STR_ABOUT_PARENTS_1[] PROGMEM = TR_ABOUT_PARENTS_1;
-  const pm_char STR_ABOUT_PARENTS_2[] PROGMEM = TR_ABOUT_PARENTS_2;
-  const pm_char STR_ABOUT_PARENTS_3[] PROGMEM = TR_ABOUT_PARENTS_3;
-  const pm_char STR_ABOUT_PARENTS_4[] PROGMEM = TR_ABOUT_PARENTS_4;
+const pm_char STR_ABOUT_PARENTS_1[] PROGMEM = TR_ABOUT_PARENTS_1;
+const pm_char STR_ABOUT_PARENTS_2[] PROGMEM = TR_ABOUT_PARENTS_2;
+const pm_char STR_ABOUT_PARENTS_3[] PROGMEM = TR_ABOUT_PARENTS_3;
+const pm_char STR_ABOUT_PARENTS_4[] PROGMEM = TR_ABOUT_PARENTS_4;
 #endif

@@ -758,9 +758,9 @@
 #define TR_ALARMS_LABEL                "Alarms"
 #define TR_BATTERY_RANGE               TR("Battery range", "Battery meter range")
 #define TR_BATTERYWARNING              INDENT "Battery low"
-#define TR_BATTERYCHARGING             "Charging..."
-#define TR_BATTERYFULL                 "Battery full"
-#define TR_BATTERYNONE                 "None!"
+#define TR_BATTERYCHARGING			   "Charging..."
+#define TR_BATTERYFULL				   "Battery full"
+#define TR_BATTERYNONE				   "None!"
 #define TR_INACTIVITYALARM             INDENT "Inactivity"
 #define TR_MEMORYWARNING               INDENT "Memory low"
 #define TR_ALARMWARNING                INDENT "Sound off"
@@ -1369,7 +1369,8 @@
 #define TR_MENU_OTHER                  "Other"
 #define TR_MENU_INVERT                 "Invert"
 #define TR_JITTER_FILTER               "ADC filter"
-#define TR_CROSSFIRE_SETUP             "Crossfire setup"
+#define TR_CROSSFIRE_SETUP			   "Crossfire setup"
+
 #define ZSTR_NOISE                     "Noise"
 #define ZSTR_RSSI                      "RSSI"
 #define ZSTR_SNR                       "SNR"

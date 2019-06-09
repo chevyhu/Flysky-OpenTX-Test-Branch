@@ -615,7 +615,7 @@ void LCD_ILI9481_Off( void )
 unsigned int LCD_ILI9481_ReadID( void )
 {
   int ID = 0;
-  int Data;
+  int Data = 0;
 
   /* Have a issue here */
   return 0;
@@ -1161,109 +1161,109 @@ unsigned int LCD_ST7796S_ReadID( void )
 
 
 
-static void lcdSpiInit()
-{
-  lcdWriteCommand(0x11);
-  delay_ms( 120 );
-  lcdWriteCommand(0x13);
-
-  lcdWriteCommand(0xf0);
-  lcdWriteData(0xc3);
-  lcdWriteCommand(0xf0);
-  lcdWriteData(0x96);
-
-  lcdWriteCommand(0x36);
-
-// #if defined( LCD_DIRECTION ) && ( LCD_DIRECTION == LCD_VERTICAL )
-  lcdWriteData(0x08);
-// #else
-  //lcdWriteData(0xf8);
-  //lcdWriteData(0xcc);
-//#endif
-
-  lcdWriteCommand(0x3A);
-  lcdWriteData(0x65);
-
-  lcdWriteCommand(0xB4);
-  lcdWriteData(0x01);
-
-  lcdWriteCommand(0xb5);
-  lcdWriteData(VFP);
-  lcdWriteData(VBP + VSH);
-  lcdWriteData(0x00);
-  lcdWriteData(HBP + 4);
-
-  lcdWriteCommand(0xb6);
-  lcdWriteData(0xe0);
-  lcdWriteData(0x42);
-  lcdWriteData(0x3b);
-
-  lcdWriteCommand(0xB7);
-  lcdWriteData(0x66);
-
-  lcdWriteCommand(0xe8);
-  lcdWriteData(0x40);
-  lcdWriteData(0x8a);
-  lcdWriteData(0x00);
-  lcdWriteData(0x00);
-  lcdWriteData(0x29);
-  lcdWriteData(0x19);
-  lcdWriteData(0xa5);
-  lcdWriteData(0x33);
-
-  lcdWriteCommand(0xc1);
-  lcdWriteData(0x06);
-
-  lcdWriteCommand(0xc2);
-  lcdWriteData(0xa7);
-
-  lcdWriteCommand(0xc5);
-  lcdWriteData(0x18);
-
-  lcdWriteCommand(0xe0); //Positive Voltage Gamma Control
-  lcdWriteData(0xf0);
-  lcdWriteData(0x09);
-  lcdWriteData(0x0b);
-  lcdWriteData(0x06);
-  lcdWriteData(0x04);
-  lcdWriteData(0x15);
-  lcdWriteData(0x2f);
-  lcdWriteData(0x54);
-  lcdWriteData(0x42);
-  lcdWriteData(0x3c);
-  lcdWriteData(0x17);
-  lcdWriteData(0x14);
-  lcdWriteData(0x18);
-  lcdWriteData(0x1b);
-
-  lcdWriteCommand(0xe1); //Negative Voltage Gamma Control
-  lcdWriteData(0xf0);
-  lcdWriteData(0x09);
-  lcdWriteData(0x0b);
-  lcdWriteData(0x06);
-  lcdWriteData(0x04);
-  lcdWriteData(0x03);
-  lcdWriteData(0x2d);
-  lcdWriteData(0x43);
-  lcdWriteData(0x42);
-  lcdWriteData(0x3b);
-  lcdWriteData(0x16);
-  lcdWriteData(0x14);
-  lcdWriteData(0x17);
-  lcdWriteData(0x1b);
-
-  lcdWriteCommand(0xf0);
-  lcdWriteData(0x3c);
-  lcdWriteCommand(0xf0);
-  lcdWriteData(0x69);
-
-  delay_ms(5);
-  lcdWriteCommand(0x28);
-  lcdWriteCommand(0x2C);
-
-  delay_ms(50);
-  lcdWriteCommand(0x29); // LCD ON
-}
+// static void lcdSpiInit()
+//{
+//  lcdWriteCommand(0x11);
+//  delay_ms( 120 );
+//  lcdWriteCommand(0x13);
+//
+//  lcdWriteCommand(0xf0);
+//  lcdWriteData(0xc3);
+//  lcdWriteCommand(0xf0);
+//  lcdWriteData(0x96);
+//
+//  lcdWriteCommand(0x36);
+//
+//// #if defined( LCD_DIRECTION ) && ( LCD_DIRECTION == LCD_VERTICAL )
+//  lcdWriteData(0x08);
+//// #else
+//  //lcdWriteData(0xf8);
+//  //lcdWriteData(0xcc);
+////#endif
+//
+//  lcdWriteCommand(0x3A);
+//  lcdWriteData(0x65);
+//
+//  lcdWriteCommand(0xB4);
+//  lcdWriteData(0x01);
+//
+//  lcdWriteCommand(0xb5);
+//  lcdWriteData(VFP);
+//  lcdWriteData(VBP + VSH);
+//  lcdWriteData(0x00);
+//  lcdWriteData(HBP + 4);
+//
+//  lcdWriteCommand(0xb6);
+//  lcdWriteData(0xe0);
+//  lcdWriteData(0x42);
+//  lcdWriteData(0x3b);
+//
+//  lcdWriteCommand(0xB7);
+//  lcdWriteData(0x66);
+//
+//  lcdWriteCommand(0xe8);
+//  lcdWriteData(0x40);
+//  lcdWriteData(0x8a);
+//  lcdWriteData(0x00);
+//  lcdWriteData(0x00);
+//  lcdWriteData(0x29);
+//  lcdWriteData(0x19);
+//  lcdWriteData(0xa5);
+//  lcdWriteData(0x33);
+//
+//  lcdWriteCommand(0xc1);
+//  lcdWriteData(0x06);
+//
+//  lcdWriteCommand(0xc2);
+//  lcdWriteData(0xa7);
+//
+//  lcdWriteCommand(0xc5);
+//  lcdWriteData(0x18);
+//
+//  lcdWriteCommand(0xe0); //Positive Voltage Gamma Control
+//  lcdWriteData(0xf0);
+//  lcdWriteData(0x09);
+//  lcdWriteData(0x0b);
+//  lcdWriteData(0x06);
+//  lcdWriteData(0x04);
+//  lcdWriteData(0x15);
+//  lcdWriteData(0x2f);
+//  lcdWriteData(0x54);
+//  lcdWriteData(0x42);
+//  lcdWriteData(0x3c);
+//  lcdWriteData(0x17);
+//  lcdWriteData(0x14);
+//  lcdWriteData(0x18);
+//  lcdWriteData(0x1b);
+//
+//  lcdWriteCommand(0xe1); //Negative Voltage Gamma Control
+//  lcdWriteData(0xf0);
+//  lcdWriteData(0x09);
+//  lcdWriteData(0x0b);
+//  lcdWriteData(0x06);
+//  lcdWriteData(0x04);
+//  lcdWriteData(0x03);
+//  lcdWriteData(0x2d);
+//  lcdWriteData(0x43);
+//  lcdWriteData(0x42);
+//  lcdWriteData(0x3b);
+//  lcdWriteData(0x16);
+//  lcdWriteData(0x14);
+//  lcdWriteData(0x17);
+//  lcdWriteData(0x1b);
+//
+//  lcdWriteCommand(0xf0);
+//  lcdWriteData(0x3c);
+//  lcdWriteCommand(0xf0);
+//  lcdWriteData(0x69);
+//
+//  delay_ms(5);
+//  lcdWriteCommand(0x28);
+//  lcdWriteCommand(0x2C);
+//
+//  delay_ms(50);
+//  lcdWriteCommand(0x29); // LCD ON
+//}
 
 static void lcdReset()
 {

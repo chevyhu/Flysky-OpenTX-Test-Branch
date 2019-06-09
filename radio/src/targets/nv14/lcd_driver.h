@@ -23,17 +23,17 @@
 
 #include "board.h"
 
-#define HBP  ( 24 ) // TODO use names from FlySky
-#define VBP  ( 10 )
+#define HBP  24 // TODO use names from FlySky
+#define VBP  10
 
-#define HSW  ( 4 )
-#define VSH  ( 2 )
+#define HSW  4
+#define VSH  2
 
 #define HFP  ( 140 - HBP )
 #define VFP  ( 22 - VBP )
 
-#define LCD_FIRST_LAYER     ( 0 )
-#define LCD_SECOND_LAYER    ( 1 )
+#define LCD_FIRST_LAYER    0
+#define LCD_SECOND_LAYER   1
 
 
 #define PORT_LCD_CS         ( GPIOE )

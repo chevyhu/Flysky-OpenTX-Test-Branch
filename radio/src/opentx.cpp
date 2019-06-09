@@ -2843,13 +2843,6 @@ uint32_t pwrCheck()
     if (TELEMETRY_STREAMING()) {
       message = STR_MODEL_STILL_POWERED;
     }
-#if defined (PCBNV14)
-    if (message && !g_eeGeneral.disableRssiPoweroffAlarm) {
-      audioEvent(AU_MODEL_STILL_POWERED);
-
-      return e_power_on;
-    }
-#endif
     if (pwr_check_state == PWR_CHECK_PAUSED) {
       // nothing
     }
@@ -2865,31 +2858,22 @@ uint32_t pwrCheck()
         BACKLIGHT_ENABLE();
       }
       if (get_tmr10ms() - pwr_press_time > PWR_PRESS_SHUTDOWN_DELAY) {
-
-#if defined(SHUTDOWN_CONFIRMATION)
-        while (1) {
-#else
-        while ((TELEMETRY_STREAMING() && !g_eeGeneral.disableRssiPoweroffAlarm)) {
-#endif
-          lcdRefreshWait();
-          lcdClear();
-          POPUP_CONFIRMATION("Confirm Shutdown");
-          event_t evt = getEvent(false);
-          DISPLAY_WARNING(evt);
-          lcdRefresh();
-          if (warningResult) {
+        if (TELEMETRY_STREAMING() && !g_eeGeneral.disableRssiPoweroffAlarm){
+        new Dialog(WARNING_TYPE_INPUT, "Shut Down", "PWR Off TX?", [=]() {
+            // power off
+            haptic.play(15, 3, PLAY_NOW);
             pwr_check_state = PWR_CHECK_OFF;
             return e_power_off;
-          }
-          else if (!warningText) {
-            // shutdown has been cancelled
-            pwr_check_state = PWR_CHECK_PAUSED;
-            return e_power_on;
-          }
+        });
+        // shutdown has been cancelled
+        pwr_check_state = PWR_CHECK_PAUSED;
+        return e_power_on;
         }
-        haptic.play(15, 3, PLAY_NOW);
-        pwr_check_state = PWR_CHECK_OFF;
-        return e_power_off;
+        else {
+            haptic.play(15, 3, PLAY_NOW);
+            pwr_check_state = PWR_CHECK_OFF;
+            return e_power_off;
+        }
       }
       else {
         drawShutdownAnimation(pwrPressedDuration(), message);

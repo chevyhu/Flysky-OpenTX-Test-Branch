@@ -28,8 +28,11 @@ set(PCB_RF_BAUD 921600 CACHE STRING "INTERNAL_MODULE_BAUDRATE: ${RF_BAUD_RATE}")
 set_property(CACHE PCB_RF_BAUD PROPERTY STRINGS ${RF_BAUD_RATE})
 
 set(FLAVOUR NV14)
-add_definitions(-DPCBNV14 -DPCBFLYSKY -DINTERNAL_MODULE_BAUDRATE=${PCB_RF_BAUD})
-#add_definitions(-DSOFTWARE_VOLUME)
+add_definitions(-DPCBNV14 -DPCBFLYSKY)
+set(PCBREV "13" CACHE STRING "PCB Revision")
+add_definitions(-DINTERNAL_MODULE_BAUDRATE=${PCB_RF_BAUD})
+
+add_definitions(-DSOFTWARE_VOLUME)
 set(TARGET_SRC
   ${TARGET_SRC}
   #../common/arm/stm32/audio_dac_driver.cpp
@@ -44,23 +47,21 @@ set(FIRMWARE_TARGET_SRC
   )
 
 set(BITMAPS_TARGET nv14_bitmaps)
-set(FONTS_TARGET x10_fonts)
+set(FONTS_TARGET nv14_fonts)
 set(LCD_DRIVER lcd_driver.cpp)
-set(LUA_EXPORT lua_export_x10)
+set(LUA_EXPORT lua_export_nv14)
 set(TOUCH_DRIVER touch_driver.cpp)
 
 set(FIRMWARE_DEPENDENCIES ${FIRMWARE_DEPENDENCIES} ${BITMAPS_TARGET})
 
 add_definitions(-DSTM32F429_439xx -DSDRAM -DCOLORLCD)
 add_definitions(-DEEPROM_VARIANT=0 -DAUDIO -DVOICE -DRTCLOCK)
-add_definitions(-DGPS_USART_BAUDRATE=${INTERNAL_GPS_BAUDRATE})
+# add_definitions(-DGPS_USART_BAUDRATE=${INTERNAL_GPS_BAUDRATE})
 add_definitions(-DPWR_BUTTON_${PWR_BUTTON})
 add_definitions(-DCROSSFIRE_NATIVE)
 add_definitions(-DFLYSKY_HALL_STICKS_REVERSE)
 #add_definitions(-DFLYSKY_AUTO_POWER_DOWN)
-if(NOT UNEXPECTED_SHUTDOWN)
-  add_definitions(-DNO_UNEXPECTED_SHUTDOWN)
-endif()
+remove_definitions(-DVARIO)
 
 include_directories(${RADIO_SRC_DIRECTORY}/fonts/480x272 gui/${GUI_DIR} gui/${GUI_DIR}/layouts)
 include_directories(${RADIO_SRC_DIRECTORY}/telemetry)
@@ -151,4 +152,4 @@ if(PYTHONINTERP_FOUND)
   )
 endif()
 
-set(LUA_EXPORT lua_export_nv14)
+# set(LUA_EXPORT lua_export_nv14)
