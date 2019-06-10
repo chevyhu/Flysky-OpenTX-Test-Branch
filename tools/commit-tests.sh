@@ -39,9 +39,9 @@ else
     SCRIPT=$(readlink -f "$0")
 fi
 
-# if [[ ! -z ${GCC_ARM} ]] ; then
-#   export PATH=${GCC_ARM}:$PATH
-# fi
+if [[ ! -z ${GCC_ARM} ]] ; then
+  export PATH=${GCC_ARM}:$PATH
+fi
 
 # : ${SRCDIR:=$(dirname "$SCRIPT")/..}
 
