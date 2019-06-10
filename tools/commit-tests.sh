@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Stops on first error, echo on
-set -e
-set -x
+# set -e
+# set -x
 
 # Allow variable core usage, default uses two cores, to set 8 cores for example : commit-tests.sh -j8
 # : ${CORES:=2}
@@ -39,11 +39,11 @@ else
     SCRIPT=$(readlink -f "$0")
 fi
 
-if [[ ! -z ${GCC_ARM} ]] ; then
-  export PATH=${GCC_ARM}:$PATH
-fi
+# if [[ ! -z ${GCC_ARM} ]] ; then
+#   export PATH=${GCC_ARM}:$PATH
+# fi
 
-: ${SRCDIR:=$(dirname "$SCRIPT")/..}
+# : ${SRCDIR:=$(dirname "$SCRIPT")/..}
 
 # : ${COMMON_OPTIONS:=" "}
 # if (( $WERROR )); then COMMON_OPTIONS+=" -DWARNINGS_AS_ERRORS=YES"; fi
