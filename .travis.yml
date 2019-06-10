@@ -15,8 +15,8 @@ env:
   global:
     # - QT_BASE=53
     # - QT_BASE=54
-    # - QT_BASE=55
-    - QT_BASE=56
+    - QT_BASE=55
+    # - QT_BASE=56
     #-  QT_BASE=57
     # - GCC_ARM=/opt/gcc-arm-none-eabi/bin
     # - AVR_FLAVORS="AVR9X 9X GRUVIN9X MEGA2560"
@@ -49,9 +49,9 @@ env:
     - FLAVOR=NV14
     
 before_install:
-  - sudo add-apt-repository ppa:ubuntu-sdk-team/ppa --yes
+  # - sudo add-apt-repository ppa:ubuntu-sdk-team/ppa --yes
   # - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded --yes
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
+  # - sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
   # - if [ "$QT_BASE" = "53" ]; then sudo add-apt-repository ppa:beineri/opt-qt532-bionic -y; fi
   # - if [ "$QT_BASE" = "54" ]; then sudo add-apt-repository ppa:beineri/opt-qt542-bionic -y; fi
   # - if [ "$QT_BASE" = "55" ]; then sudo add-apt-repository ppa:beineri/opt-qt551-bionic -y; fi
@@ -61,13 +61,19 @@ before_install:
 
 addons:
   apt:
+    sources:
+    - ubuntu-toolchain-r-test
     update: true
+
+packages:
+    - gcc
+    - g++
 
   # bad idea - lol
   # - sudo apt-get dist-upgrade --yes
 
 install:
-  - sudo apt-get install --yes --force-yes -qq software-properties-common git make ccache python curl bzip2 clang libblocksruntime-dev git-extras gcc gcc-avr avr-libc libfox-1.6-dev python-qt4 gcc-arm-none-eabi subversion gcc-avr avr-libc avrdude build-essential ruby libqtcore4 libqt4-dev qt4-qmake g++ cmake libxerces-c-dev xsdcxx libsdl1.2-dev libusb-1.0-0 libphonon-dev phonon libqtwebkit-dev python-qt4 python-qt4-dev qt5-default qttools5-dev-tools qtmultimedia5-dev qttools5-dev libqt5svg5-dev libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib python-pil libgtest-dev bison flex p7zip-full qtmultimedia5-dev python3-pip python3 python3-pyqt5 curl libmpfr4 libmpc3 libfox-1.6-dev libgtest-dev
+  - sudo apt-get install --yes --force-yes -qq software-properties-common git make ccache python curl bzip2 clang-8 libblocksruntime-dev git-extras gcc-avr avr-libc libfox-1.6-dev python-qt4 gcc-arm-none-eabi subversion avrdude build-essential ruby libqtcore4 libqt4-dev qt4-qmake g++ cmake libxerces-c-dev xsdcxx libsdl1.2-dev libusb-1.0-0 libphonon-dev phonon libqtwebkit-dev python-qt4 python-qt4-dev qt5-default qttools5-dev-tools qtmultimedia5-dev qttools5-dev libqt5svg5-dev libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib python-pil libgtest-dev bison flex p7zip-full python3-pip python3 python3-pyqt5 curl libmpfr4 libmpc3 libfox-1.6-dev
 
 script:
   - ./tools/commit-tests.sh
