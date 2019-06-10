@@ -9,7 +9,7 @@ set -x
 # Default build treats warnings as errors, set -Wno-error to override, e.g.: commit-tests.sh -Wno-error
 : ${WERROR:=1}
 # A board name to build for, or ALL
-: ${FLAVOR:=ALL}
+: ${FLAVOR:=NV14}
 
 for i in "$@"
 do
@@ -201,6 +201,16 @@ if [[ " X12S HORUS ALL " =~ " ${FLAVOR} " ]] ; then
   make -j${CORES} libsimulator
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
 fi
+
+if [[ " NV14 NIRVANA ALL " =~ " ${FLAVOR} " ]] ; then
+  # OpenTX on Nirvana
+  rm -rf *
+  cmake ${COMMON_OPTIONS} -DPCB=NV14 -DHELI=NO -DLUA=YES -DGVARS=YES ${SRCDIR} -DBOOTLOADER=OFF
+  make -j${CORES} ${FIRMARE_TARGET}
+  make -j${CORES} libsimulator
+  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
+fi
+
 
 if [[ " DEFAULT ALL " =~ " ${FLAVOR} " ]] ; then
   # Companion

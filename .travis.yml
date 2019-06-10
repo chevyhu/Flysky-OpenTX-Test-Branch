@@ -1,5 +1,5 @@
 sudo: required
-dist: trusty
+dist: bionic
 language: python
 compiler: gcc
 
@@ -11,13 +11,13 @@ python:
 
 env:
   global:
-    - QT_BASE=53
+    # - QT_BASE=53
     # - QT_BASE=54
     # - QT_BASE=55
     # - QT_BASE=56
-    # - QT_BASE=57
-    #- GCC_ARM=/opt/gcc-arm-none-eabi/bin
-    - AVR_FLAVORS="AVR9X 9X GRUVIN9X MEGA2560"
+    -  QT_BASE=57
+    - GCC_ARM=/opt/gcc-arm-none-eabi/bin
+    # - AVR_FLAVORS="AVR9X 9X GRUVIN9X MEGA2560"
     - PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages
   matrix:
     #
@@ -25,26 +25,27 @@ env:
     # DEFAULT is "make all" (including Companion & Simulator), with default settings
     #
     # - FLAVOR=ALL
-    - FLAVOR=DEFAULT
-    - FLAVOR=AVR9X
+    # - FLAVOR=DEFAULT
+    # - FLAVOR=AVR9X
     # - FLAVOR=9X
     # - FLAVOR=GRUVIN9X
     # - FLAVOR=MEGA2560
-    - FLAVOR=ARM9X
+    # - FLAVOR=ARM9X
     # - FLAVOR=AR9X
     # - FLAVOR=SKY9X
     # - FLAVOR=9XRPRO
-    - FLAVOR=X7
-    - FLAVOR=XLITE
-    - FLAVOR=X9
+    # - FLAVOR=X7
+    # - FLAVOR=XLITE
+    # - FLAVOR=X9
     # - FLAVOR=X9D
     # - FLAVOR=X9D+
     # - FLAVOR=X9E
-    - FLAVOR=HORUS
+    # - FLAVOR=HORUS
     # - FLAVOR=X10
     # - FLAVOR=X12Sr10
     # - FLAVOR=X12S
-
+    - FLAVOR=NV14
+    
 before_install:
   - sudo add-apt-repository ppa:ubuntu-sdk-team/ppa --yes
   - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded --yes
