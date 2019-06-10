@@ -1,5 +1,7 @@
 sudo: required
-dist: bionic
+
+# always at latest
+dist: disco
 language: python
 compiler: gcc
 
@@ -7,7 +9,7 @@ virtualenv:
   system_site_packages: false
 
 python:
-  - 3.4
+  - 3.7
 
 env:
   global:
