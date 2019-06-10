@@ -18,7 +18,7 @@ env:
     # - QT_BASE=55
     # - QT_BASE=56
     -  QT_BASE=57
-    - GCC_ARM=/opt/gcc-arm-none-eabi/bin
+    # - GCC_ARM=/opt/gcc-arm-none-eabi/bin
     # - AVR_FLAVORS="AVR9X 9X GRUVIN9X MEGA2560"
     # - PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages
   matrix:
@@ -57,7 +57,11 @@ before_install:
   # - if [ "$QT_BASE" = "55" ]; then sudo add-apt-repository ppa:beineri/opt-qt551-bionic -y; fi
   # - if [ "$QT_BASE" = "56" ]; then sudo add-apt-repository ppa:beineri/opt-qt562-bionic -y; fi
   # - if [ "$QT_BASE" = "57" ]; then sudo add-apt-repository ppa:beineri/opt-qt571-bionic -y; fi
-  - sudo apt-get update -qq
+  # - sudo apt-get update -qq
+
+addons:
+  apt:
+    update: true
 
   # bad idea - lol
   # - sudo apt-get dist-upgrade --yes

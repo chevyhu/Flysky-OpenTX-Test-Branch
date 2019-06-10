@@ -187,3 +187,6 @@ add_subdirectory(${RADIO_SRC_DIRECTORY})
 if(Qt5Core_FOUND AND NOT DISABLE_COMPANION)
   add_subdirectory(${COMPANION_SRC_DIRECTORY})
 endif()
+
+set(CMAKE_C_COMPILER /usr/bin/clang)
+set(CMAKE_CXX_COMPILER /usr/bin/clang++)
