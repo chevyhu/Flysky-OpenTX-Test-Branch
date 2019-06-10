@@ -19,7 +19,6 @@
  */
 
 #include "model_telemetry.h"
-#include "../common/windows/static.h"
 #include "libwindows.h"
 #include "opentx.h"
 
@@ -142,8 +141,8 @@ class SensorEditWindow : public Page {
   Window *sensorOneWindow = nullptr;
 
   void buildHeader(Window *window) {
-    new StaticText(window, {70, 4, 200, 20}, STR_SENSOR + to_string(index + 1),
-                   MENU_TITLE_COLOR);
+    new StaticText(window, {70, 4, 200, 20},
+                   STR_SENSOR + std::to_string(index + 1), MENU_TITLE_COLOR);
     TelemetrySensor &telemetrySensor = g_model.telemetrySensors[index];
     uint8_t unit =
         telemetrySensor.unit == UNIT_CELLS ? UNIT_VOLTS : telemetrySensor.unit;
@@ -153,11 +152,11 @@ class SensorEditWindow : public Page {
                 STR_VTELEMUNIT[0]);
       new StaticText(
           window, {185, 4, 200, 20},
-          to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)) + unitStr,
+          std::to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)) + unitStr,
           MENU_TITLE_COLOR);
     } else {
       new StaticText(window, {185, 4, 200, 20},
-                     to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)),
+                     std::to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)),
                      MENU_TITLE_COLOR);
     }
   }
