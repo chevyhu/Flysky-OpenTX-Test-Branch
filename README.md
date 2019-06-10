@@ -1,6 +1,6 @@
 ## OpenTX NV14 Branch 
 
-[![Build Status](https://travis-ci.org/derdoktor667/Flysky-OpenTX-Test-Branch.svg?branch=matrix14)](https://travis-ci.org/derdoktor667/Flysky-OpenTX-Test-Branch)
+<img align="left" width=50 src="TravisCI-Mascot-2.png" /> [![Build Status](https://travis-ci.org/derdoktor667/Flysky-OpenTX-Test-Branch.svg?branch=matrix14)](https://travis-ci.org/derdoktor667/Flysky-OpenTX-Test-Branch)
 
 Build command:
 
