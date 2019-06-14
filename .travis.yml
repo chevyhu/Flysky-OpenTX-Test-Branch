@@ -1,79 +1,41 @@
-sudo: required
+dist: trusty
+sudo: true
 
-# always at latest
-dist: disco
-language: python
-compiler: gcc
+language: c
 
-virtualenv:
-  system_site_packages: false
+services:
+  - docker
 
-python:
-  - 3.7
+notifications:
+  email: false
 
-env:
-  global:
-    # - QT_BASE=53
-    # - QT_BASE=54
-    - QT_BASE=55
-    # - QT_BASE=56
-    #-  QT_BASE=57
-    # - GCC_ARM=/opt/gcc-arm-none-eabi/bin
-    # - AVR_FLAVORS="AVR9X 9X GRUVIN9X MEGA2560"
-    # - PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages
-  matrix:
-    #
-    # ALL will build every individual board & DEFAULT, sequentially.
-    # DEFAULT is "make all" (including Companion & Simulator), with default settings
-    #
-    # - FLAVOR=ALL
-    # - FLAVOR=DEFAULT
-    # - FLAVOR=AVR9X
-    # - FLAVOR=9X
-    # - FLAVOR=GRUVIN9X
-    # - FLAVOR=MEGA2560
-    # - FLAVOR=ARM9X
-    # - FLAVOR=AR9X
-    # - FLAVOR=SKY9X
-    # - FLAVOR=9XRPRO
-    # - FLAVOR=X7
-    # - FLAVOR=XLITE
-    # - FLAVOR=X9
-    # - FLAVOR=X9D
-    # - FLAVOR=X9D+
-    # - FLAVOR=X9E
-    # - FLAVOR=HORUS
-    # - FLAVOR=X10
-    # - FLAVOR=X12Sr10
-    # - FLAVOR=X12S
-    - FLAVOR=NV14
-    
 before_install:
-  # - sudo add-apt-repository ppa:ubuntu-sdk-team/ppa --yes
-  # - sudo add-apt-repository ppa:terry.guo/gcc-arm-embedded --yes
-  # - sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
-  # - if [ "$QT_BASE" = "53" ]; then sudo add-apt-repository ppa:beineri/opt-qt532-bionic -y; fi
-  # - if [ "$QT_BASE" = "54" ]; then sudo add-apt-repository ppa:beineri/opt-qt542-bionic -y; fi
-  # - if [ "$QT_BASE" = "55" ]; then sudo add-apt-repository ppa:beineri/opt-qt551-bionic -y; fi
-  # - if [ "$QT_BASE" = "56" ]; then sudo add-apt-repository ppa:beineri/opt-qt562-bionic -y; fi
-  # - if [ "$QT_BASE" = "57" ]; then sudo add-apt-repository ppa:beineri/opt-qt571-bionic -y; fi
-  # - sudo apt-get update -qq
-
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    update: true
-
-packages:
-    - gcc
-    - g++
-
-  # bad idea - lol
-  # - sudo apt-get dist-upgrade --yes
-
+  - git clone --recursive https://github.com/derdoktor667/Flysky-OpenTX-Test-Branch.git /tmp/JumperTX
+  
 install:
-  - sudo apt-get install --yes --force-yes -qq software-properties-common git make ccache python curl bzip2 clang libblocksruntime-dev git-extras gcc-avr avr-libc libfox-1.6-dev python-qt4 gcc-arm-none-eabi subversion avrdude build-essential ruby libqtcore4 libqt4-dev qt4-qmake g++ cmake libxerces-c-dev xsdcxx libsdl1.2-dev libusb-1.0-0 libphonon-dev phonon libqtwebkit-dev python-qt4 python-qt4-dev qt5-default qttools5-dev-tools qtmultimedia5-dev qttools5-dev libqt5svg5-dev libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib python-pil libgtest-dev bison flex p7zip-full python3-pip python3 python3-pyqt5 curl libmpfr4 libmpc3 libfox-1.6-dev
+  - cd ${TRAVIS_BUILD_DIR}
+  - ls -al
+  - docker build -t benlye/jumpertx-build .
+
+before_script:
+  - export -f travis_fold
+  - export -f travis_nanoseconds
+  - export -f travis_time_start
+  - export -f travis_time_finish
+  - start_fold() { echo -e "travis_fold:start:$1"; }
+  - end_fold() { echo -e "\ntravis_fold:end:$1\r"; }
+  - runBuildWithoutFlag() { exitcode=0; start_fold $1; travis_time_start; echo "docker run --rm -it -v /tmp/JumperTX:/jumpertx benlye/jumpertx-build"; docker run --rm -it -v /tmp/JumperTX:/jumpertx benlye/jumpertx-build; exitcode=$?; end_fold $1; echo; return $exitcode; }
+  - runBuildWithFlag() { exitcode=0; start_fold $1; travis_time_start; echo "docker run --rm -it -v /tmp/JumperTX:/jumpertx -e \"CMAKE_FLAGS=$2\"  benlye/jumpertx-build"; docker run --rm -it -v /tmp/JumperTX:/jumpertx -e "CMAKE_FLAGS=$2" benlye/jumpertx-build; exitcode=$?; end_fold $1; echo; return $exitcode; }
+  - runBuild() { if [ "$2" ]; then runBuildWithFlag $1 "$2"; else runBuildWithoutFlag $1; fi; }
 
 script:
-  - ./tools/commit-tests.sh
+  - runBuild "T16.Default"
+  - runBuild "T16HD.Default" "PCB=T16HD"
+  #- runBuild "T12.Default" "PCB=T12"
+  - runBuild "T16.Changed.Default" "HELI=NO"
+  - runBuild "T16.Changed.Default.Added.New" "HELI=NO FOO=BAR"
+  - runBuild "T16.Changed.Default.Unchanged.Default.Added.New" "HELI=NO MULTIMODULE=YES FOO=BAR"
+  - runBuild "T16.Lang.German" "TRANSLATIONS=DE"
+  - runBuild "T16.Lang.French" "TRANSLATIONS=FR"
+  - runBuild "T16.Lang.Italian" "TRANSLATIONS=IT"
+  - runBuild "T16.Lang.Czech" "TRANSLATIONS=CZ"
