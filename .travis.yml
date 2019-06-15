@@ -10,12 +10,12 @@ notifications:
   email: false
 
 before_install:
-  - git clone --recursive https://github.com/derdoktor667/Flysky-OpenTX-Test-Branch.git /tmp/JumperTX
+  - git clone --recursive https://github.com/derdoktor667/Flysky-OpenTX-Test-Branch.git /tmp/nv14
   
 install:
   - cd ${TRAVIS_BUILD_DIR}
   - ls -al
-  - docker build -t benlye/jumpertx-build .
+  - docker build -t derdoktor667/nv14-build .
 
 before_script:
   - export -f travis_fold
@@ -24,18 +24,18 @@ before_script:
   - export -f travis_time_finish
   - start_fold() { echo -e "travis_fold:start:$1"; }
   - end_fold() { echo -e "\ntravis_fold:end:$1\r"; }
-  - runBuildWithoutFlag() { exitcode=0; start_fold $1; travis_time_start; echo "docker run --rm -it -v /tmp/JumperTX:/jumpertx benlye/jumpertx-build"; docker run --rm -it -v /tmp/JumperTX:/jumpertx benlye/jumpertx-build; exitcode=$?; end_fold $1; echo; return $exitcode; }
-  - runBuildWithFlag() { exitcode=0; start_fold $1; travis_time_start; echo "docker run --rm -it -v /tmp/JumperTX:/jumpertx -e \"CMAKE_FLAGS=$2\"  benlye/jumpertx-build"; docker run --rm -it -v /tmp/JumperTX:/jumpertx -e "CMAKE_FLAGS=$2" benlye/jumpertx-build; exitcode=$?; end_fold $1; echo; return $exitcode; }
+  - runBuildWithoutFlag() { exitcode=0; start_fold $1; travis_time_start; echo "docker run --rm -it -v /tmp/nv14:/nv14 derdoktor667/nv14-build"; docker run --rm -it -v /tmp/nv14:/nv14 derdoktor667/nv14-build; exitcode=$?; end_fold $1; echo; return $exitcode; }
+  - runBuildWithFlag() { exitcode=0; start_fold $1; travis_time_start; echo "docker run --rm -it -v /tmp/nv14:/nv14 -e \"CMAKE_FLAGS=$2\"  derdoktor667/nv14-build"; docker run --rm -it -v /tmp/nv14:/nv14 -e "CMAKE_FLAGS=$2" derdoktor667/nv14-build; exitcode=$?; end_fold $1; echo; return $exitcode; }
   - runBuild() { if [ "$2" ]; then runBuildWithFlag $1 "$2"; else runBuildWithoutFlag $1; fi; }
 
 script:
-  - runBuild "T16.Default"
-  - runBuild "T16HD.Default" "PCB=T16HD"
+  - runBuild "nv14.Default"
+  #- runBuild "T16HD.Default" "PCB=T16HD"
   #- runBuild "T12.Default" "PCB=T12"
-  - runBuild "T16.Changed.Default" "HELI=NO"
-  - runBuild "T16.Changed.Default.Added.New" "HELI=NO FOO=BAR"
-  - runBuild "T16.Changed.Default.Unchanged.Default.Added.New" "HELI=NO MULTIMODULE=YES FOO=BAR"
-  - runBuild "T16.Lang.German" "TRANSLATIONS=DE"
-  - runBuild "T16.Lang.French" "TRANSLATIONS=FR"
-  - runBuild "T16.Lang.Italian" "TRANSLATIONS=IT"
-  - runBuild "T16.Lang.Czech" "TRANSLATIONS=CZ"
+  #- runBuild "T16.Changed.Default" "HELI=NO"
+  #- runBuild "T16.Changed.Default.Added.New" "HELI=NO FOO=BAR"
+  #- runBuild "T16.Changed.Default.Unchanged.Default.Added.New" "HELI=NO MULTIMODULE=YES FOO=BAR"
+  #- runBuild "T16.Lang.German" "TRANSLATIONS=DE"
+  #- runBuild "T16.Lang.French" "TRANSLATIONS=FR"
+  #- runBuild "T16.Lang.Italian" "TRANSLATIONS=IT"
+  #- runBuild "T16.Lang.Czech" "TRANSLATIONS=CZ"
