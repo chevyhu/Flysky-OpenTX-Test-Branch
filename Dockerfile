@@ -1,28 +1,26 @@
-# A Debian image for compiling Nirvana NV14
+# An Debian image for compiling OpenTX 2.2
 
-FROM debian:stretch
+FROM ubuntu:19.04
 
-# Update and install the required components
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y update
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget zip bzip2 cmake build-essential python python-pil git lib32ncurses5 mc
+RUN apt-get update && apt-get install -y build-essential cmake gcc git lib32ncurses5 lib32z1 libfox-1.6-dev libsdl1.2-dev \
+  qt5-default qtmultimedia5-dev qttools5-dev qttools5-dev-tools libqt5svg5-dev \
+  software-properties-common wget zip python-pip python-pil libgtest-dev
 
-# Retrieve and install the required version of the ARM compiler
-RUN wget https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q3-update/+download/gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2 -P /tmp --progress=bar:force
-RUN tar -C /tmp -xjf /tmp/gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2
-RUN mv /tmp/gcc-arm-none-eabi-4_7-2013q3 /opt/gcc-arm-none-eabi
-RUN rm /tmp/gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2
+RUN python -m pip install filelock
 
-# Declare the mount point
+RUN wget -q https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q3-update/+download/gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2 && \
+  tar xjf gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2 && \
+  mv gcc-arm-none-eabi-4_7-2013q3 /opt/gcc-arm-none-eabi
+
+RUN wget -q http://ftp.de.debian.org/debian/pool/main/g/gcc-avr/gcc-avr_4.7.2-2_amd64.deb && \
+  wget -q http://ftp.de.debian.org/debian/pool/main/a/avr-libc/avr-libc_1.8.0-2_all.deb && \
+  wget -q http://ftp.de.debian.org/debian/pool/main/b/binutils-avr/binutils-avr_2.24+Atmel3.4.4-1_amd64.deb && \
+  wget -q http://ftp.de.debian.org/debian/pool/main/m/mpclib/libmpc2_0.9-4_amd64.deb && \
+  dpkg -i gcc-avr_4.7.2-2_amd64.deb libmpc2_0.9-4_amd64.deb avr-libc_1.8.0-2_all.deb binutils-avr_2.24+Atmel3.4.4-1_amd64.deb
+
 VOLUME ["/nv14"]
 
-# Set the working directory to /build
-WORKDIR /build
+ENV PATH $PATH:/opt/gcc-arm-none-eabi/bin:/nv14/code/radio/util
 
-# Add the build scripts
-COPY build_firmware.py /build
-
-# Update the path
-ENV PATH $PATH:/opt/gcc-arm-none-eabi/bin:/nv14/radio/util
-
-# Run the shell script to build the firmware
-ENTRYPOINT ["bash", "-c", "python /build/build_firmware.py $CMAKE_FLAGS"]
+ARG OPENTX_VERSION_SUFFIX=
+ENV OPENTX_VERSION_SUFFIX ${OPENTX_VERSION_SUFFIX}

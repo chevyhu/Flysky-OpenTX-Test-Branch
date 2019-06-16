@@ -20,7 +20,7 @@
 
 #include "tabsgroup.h"
 
-extern void pwrSoftReboot(){};
+extern void pwrSoftReboot();
 
 class QR_CodeMenu : public TabsGroup {
  public:
