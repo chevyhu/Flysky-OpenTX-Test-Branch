@@ -2,7 +2,7 @@
  * Copyright (C) OpenTX
  *
  * Based on code named
- *   th9x - http://code.google.com/p/th9x 
+ *   th9x - http://code.google.com/p/th9x
  *   er9x - http://code.google.com/p/er9x
  *   gruvin9x - http://code.google.com/p/gruvin9x
  *
@@ -20,15 +20,13 @@
 
 #pragma once
 
-extern void pwrSoftReboot();
-
 enum PowerState {
   e_power_on,
   e_power_trainer,
   e_power_usb,
   e_power_off,
   e_power_press,
-#if defined (PCBFLYSKY)
+#if defined(PCBFLYSKY)
   e_power_low,
 #endif
 };

@@ -18,8 +18,9 @@
  * GNU General Public License for more details.
  */
 
-#include "pwr.h"
 #include "board.h"
+#include "pwr.h"
+
 
 uint32_t powerupReason
     __NOINIT;  // Stores power up reason beyond initialization for emergency
