@@ -20,8 +20,6 @@
 
 #include "tabsgroup.h"
 
-extern void pwrSoftReboot();
-
 class QR_CodeMenu : public TabsGroup {
  public:
   QR_CodeMenu(uint8_t QR_Index);

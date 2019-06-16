@@ -20,6 +20,8 @@
 
 #pragma once
 
+extern void pwrSoftReboot();
+
 enum PowerState {
   e_power_on,
   e_power_trainer,

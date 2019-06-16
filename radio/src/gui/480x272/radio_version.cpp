@@ -21,6 +21,7 @@
 #include "radio_version.h"
 #include "libwindows.h"
 #include "opentx.h"
+#include "pwr.h"
 
 enum QR_Code { QR_CODE_QUICK_START, QR_CODE_USER_MANUAL };
 

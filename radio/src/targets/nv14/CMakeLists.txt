@@ -152,4 +152,3 @@ if(PYTHONINTERP_FOUND)
   )
 endif()
 
-# set(LUA_EXPORT lua_export_nv14)
