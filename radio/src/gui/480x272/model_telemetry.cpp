@@ -19,6 +19,7 @@
  */
 
 #include "model_telemetry.h"
+#include <string>
 #include "libwindows.h"
 #include "opentx.h"
 
