@@ -24,12 +24,17 @@
 #include <string>
 #include "tabsgroup.h"
 
+using namespace std;
+
+namespace std {
 template <typename T>
-std::string ToString(T val) {
-  std::stringstream stream;
-  stream << val;
-  return stream.str();
+std::string to_string(const T& n) {
+  std::ostringstream stm;
+  stm << n;
+  return stm.str();
 }
+}  // namespace std
+}  // namespace std
 
 class ModelTelemetryPage : public PageTab {
  public:
