@@ -20,58 +20,15 @@
 
 #pragma once
 
+#include <sstream>
+#include <string>
 #include "tabsgroup.h"
 
-std::string to_str(int t) {
-  std::stringstream ss;
-  ss << t;
-  std::string str = ss.str();
-  return str;
-}
-
-std::string to_str(float t) {
-  std::stringstream ss;
-  ss << t;
-  std::string str = ss.str();
-  return str;
-}
-
-std::string to_str(long t) {
-  std::stringstream ss;
-  ss << t;
-  std::string str = ss.str();
-  return str;
-}
-
-std::string to_str(double t) {
-  std::stringstream ss;
-  ss << t;
-  std::string str = ss.str();
-  return str;
-}
-
-int from_str_to_int(std::string t) {
-  const char* buffer = t.c_str();
-  int i = atoi(buffer);
-  return i;
-}
-
-long from_str_to_long(std::string t) {
-  const char* buffer = t.c_str();
-  long i = atol(buffer);
-  return i;
-}
-
-double from_str_to_double(std::string t) {
-  const char* buffer = t.c_str();
-  double i = atof(buffer);
-  return i;
-}
-
-float from_str_to_float(std::string t) {
-  const char* buffer = t.c_str();
-  float i = atof(buffer);
-  return i;
+template <typename T>
+std::string ToString(T val) {
+  std::stringstream stream;
+  stream << val;
+  return stream.str();
 }
 
 class ModelTelemetryPage : public PageTab {
