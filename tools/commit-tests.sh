@@ -54,7 +54,7 @@ COMMON_OPTIONS+=${EXTRA_OPTIONS}
 
 : ${TEST_OPTIONS:="--gtest_shuffle --gtest_repeat=5 --gtest_break_on_failure"}
 
-: ${FIRMARE_TARGET:="firmware-size"}
+: ${FIRMARE_TARGET:="firmware"}
 
 mkdir build || true
 cd build
@@ -187,7 +187,7 @@ fi
 if [[ " NV14 ALL " =~ " ${FLAVOR} " ]] ; then
   # Nirvana TX
   rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=NV14 -DHELI=NO -DLUA=YES -DGVARS=YES ${SRCDIR}
+  cmake ${COMMON_OPTIONS} -DPCB=NV14 -DHELI=NO -DLUA=ON -DGVARS=OFF ${SRCDIR}
   make -j${CORES} ${FIRMARE_TARGET}
   make -j${CORES} libsimulator
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
