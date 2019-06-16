@@ -34,7 +34,6 @@ std::string to_string(const T& n) {
   return stm.str();
 }
 }  // namespace std
-}  // namespace std
 
 class ModelTelemetryPage : public PageTab {
  public:
