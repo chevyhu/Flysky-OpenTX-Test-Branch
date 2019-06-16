@@ -71,8 +71,7 @@ packages:
   # - sudo apt-get dist-upgrade --yes
 
 install:
-  - sudo apt-get --yes --force-yes install python3-pyqt5 curl libmpc3 libfox-1.6-dev python-pillow python-pil libgtest-dev bison flex p7zip-full python3-pip python3 software-properties-common git make ccache python curl bzip2 clang libblocksruntime-dev git-extras gcc-avr avr-libc libfox-1.6-dev python-qt4 gcc-arm-none-eabi subversion avrdude build-essential ruby libqtcore4 libqt4-dev qt4-qmake g++ cmake libxerces-c-dev xsdcxx libsdl1.2-dev libusb-1.0-0 libphonon-dev phonon libqtwebkit-dev python-qt4 python-qt4-dev qt5-default qttools5-dev-tools qtmultimedia5-dev qttools5-dev libqt5svg5-dev libnewlib-arm-none-eabi libstdc++
-  - |
+- |
     if [[ " ${AVR_FLAVORS} " =~ " ${FLAVOR} " || ${FLAVOR} == "ALL" ]]; then
       wget --quiet https://launchpad.net/ubuntu/+source/gcc-avr/1:4.9.2+Atmel3.5.0-1/+build/8403710/+files/gcc-avr_4.9.2+Atmel3.5.0-1_amd64.deb
       wget --quiet https://launchpad.net/ubuntu/+source/avr-libc/1:1.8.0+Atmel3.5.0-1/+build/8435473/+files/avr-libc_1.8.0+Atmel3.5.0-1_all.deb
@@ -86,7 +85,9 @@ install:
       # - tar xjf gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2
       # - mv gcc-arm-none-eabi-4_7-2013q3 /opt/gcc-arm-none-eabi
     fi
-  - sudo apt-get install --yes --force-yes -qq qt${QT_BASE}base qt${QT_BASE}multimedia qt${QT_BASE}svg qt${QT_BASE}tools; source /opt/qt${QT_BASE}/bin/qt${QT_BASE}-env.sh
+
+  RUN apt-get update && apt-get --yes --force-yes install python3-pyqt5 curl libmpc3 libfox-1.6-dev python-pillow python-pil libgtest-dev bison flex p7zip-full python3-pip python3 software-properties-common git make ccache python curl bzip2 clang libblocksruntime-dev git-extras gcc-avr avr-libc libfox-1.6-dev python-qt4 gcc-arm-none-eabi subversion avrdude build-essential ruby libqtcore4 libqt4-dev qt4-qmake g++ cmake libxerces-c-dev xsdcxx libsdl1.2-dev libusb-1.0-0 libphonon-dev phonon libqtwebkit-dev python-qt4 python-qt4-dev qt5-default qttools5-dev-tools qtmultimedia5-dev qttools5-dev libqt5svg5-dev libnewlib-arm-none-eabi libstdc++
+  RUN apt-get update && apt-get install --yes --force-yes -qq qt${QT_BASE}base qt${QT_BASE}multimedia qt${QT_BASE}svg qt${QT_BASE}tools; source /opt/qt${QT_BASE}/bin/qt${QT_BASE}-env.sh
 
 script:
   - ./tools/commit-tests.sh
