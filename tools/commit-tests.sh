@@ -7,9 +7,9 @@ set -x
 # Allow variable core usage, default uses two cores, to set 8 cores for example : commit-tests.sh -j8
 : ${CORES:=2}
 # Default build treats warnings as errors, set -Wno-error to override, e.g.: commit-tests.sh -Wno-error
-: ${WERROR:=1}
+: ${WERROR:=0}
 # A board name to build for, or ALL
-: ${FLAVOR:=ALL}
+: ${FLAVOR:=NV14}
 
 for i in "$@"
 do
