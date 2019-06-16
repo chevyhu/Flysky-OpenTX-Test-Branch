@@ -19,8 +19,6 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
-/* Highest address of the user mode stack */
-_estack = 0x10010000;    /* end of 64K CCM */
 _heap_end = 0xC0800000;  /* end of 8192K SDRAM */
 
 /* Generate a link error if heap and stack don't fit into RAM */
@@ -39,6 +37,8 @@ MEMORY
   MEMORY_B1 (rx)  : ORIGIN = 0x60000000, LENGTH = 0K
   SDRAM(xrw)      : ORIGIN = 0xC0000000, LENGTH = 8192K
 }
+/* Highest address of the user mode stack */
+_estack = 0x10000000 + LENGTH(CCM) - 8; /* make sure that _estack is aligned to 8 bytes */
 
 /* Define output sections */
 SECTIONS

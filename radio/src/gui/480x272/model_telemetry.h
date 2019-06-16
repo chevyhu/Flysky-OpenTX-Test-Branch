@@ -18,28 +18,22 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _MODEL_TELEMETRY_H
-#define _MODEL_TELEMETRY_H
+#pragma once
 
 #include "tabsgroup.h"
 
-class ModelTelemetryPage: public PageTab {
-  public:
-    ModelTelemetryPage();
+class ModelTelemetryPage : public PageTab {
+ public:
+  ModelTelemetryPage();
 
-    virtual void build(Window * window) override
-    {
-      build(window, -1);
-    }
+  virtual void build(Window* window) override { build(window, -1); }
 
-    void checkEvents() override;
+  void checkEvents() override;
 
-  protected:
-    Window * window = nullptr;
-    void editSensor(Window * window, uint8_t index);
-    int lastKnownIndex = 0;
-    void build(Window * window, int8_t focusSensorIndex=-1);
-    void rebuild(Window * window, int8_t focusSensorIndex=-1);
+ protected:
+  Window* window = nullptr;
+  void editSensor(Window* window, uint8_t index);
+  int lastKnownIndex = 0;
+  void build(Window* window, int8_t focusSensorIndex = -1);
+  void rebuild(Window* window, int8_t focusSensorIndex = -1);
 };
-
-#endif //_MODEL_TELEMETRY_H

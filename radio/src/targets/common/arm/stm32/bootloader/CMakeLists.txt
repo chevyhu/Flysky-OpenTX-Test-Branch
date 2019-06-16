@@ -2,7 +2,22 @@
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-if(PCB STREQUAL X12S OR PCB STREQUAL X10)
+if(PCB STREQUAL NV14)
+  set(BOOTLOADER_SRC
+    ${BOOTLOADER_SRC}
+    ../f4/system_stm32f4xx.c
+    ../../../../../targets/${TARGET_DIR}/startup_stm32f42_43xxx.s
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_spi.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_fmc.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_ltdc.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_dma2d.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_sdio.c
+    ../../../../../${STM32LIB_DIR}/STM32F4xx_StdPeriph_Driver/src/misc.c
+    )
+elseif(PCB STREQUAL X12S OR PCB STREQUAL X10)
   set(BOOTLOADER_SRC
     ${BOOTLOADER_SRC}
     ../f4/system_stm32f4xx.c
@@ -78,7 +93,7 @@ set(BOOTLOADER_SRC
   bin_files.cpp
   )
 
-if(NOT (PCB STREQUAL X10 OR PCB STREQUAL X12S))
+if(NOT (PCB STREQUAL X10 OR PCB STREQUAL X12S OR PCB STREQUAL NV14))
   set(BOOTLOADER_SRC
     ${BOOTLOADER_SRC}
     ../../../../../targets/${TARGET_DIR}/i2c_driver.cpp

@@ -327,9 +327,6 @@ file(GLOB simulator_plugins "${CMAKE_BINARY_DIR}/*opentx-*simulator${CMAKE_SHARE
 # the current flavour is not automatically added if build in the current cmake iteration, so always
 # add its library name to be sure
 string(TOLOWER ${PCB} FLAVOUR)
-if(POLICY CMP0026)
-  cmake_policy(SET CMP0026 OLD)  # https://cmake.org/cmake/help/v3.0/policy/CMP0026.html
-endif()
 #get_property(current_plugin TARGET opentx-${FLAVOUR}-simulator PROPERTY LOCATION)
 #list(APPEND simulator_plugins "${current_plugin}")
 

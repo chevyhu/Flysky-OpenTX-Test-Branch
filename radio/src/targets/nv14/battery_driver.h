@@ -18,14 +18,7 @@
  * GNU General Public License for more details.
  */
 
-/***************************************************************************************************
-
-***************************************************************************************************/
-#ifndef      __BATTERY_DRIVER_H__
-    #define  __BATTERY_DRIVER_H__
-/***************************************************************************************************
-
-***************************************************************************************************/
+#pragma once
 
 #include "board.h"
 
@@ -52,5 +45,3 @@ extern void battery_charge_init();
 extern void handle_battery_charge();
 extern uint16_t get_battery_charge_state();
 extern uint16_t getBatteryVoltage();   // returns current battery voltage in 10mV steps
-
-#endif

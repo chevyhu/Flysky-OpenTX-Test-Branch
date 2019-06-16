@@ -56,6 +56,7 @@ defined in linker script */
 /* end address for the .bss section. defined in linker script */
 .word  _ebss
 /* stack used for SystemInit_ExtMemCtl; always internal RAM used */
+.word _system_isr_vector_table_base
 
 /**
  * @brief  This is the code that gets called when the processor first
@@ -70,7 +71,17 @@ defined in linker script */
   .weak  Reset_Handler
   .type  Reset_Handler, %function
 Reset_Handler:  
-
+  LDR R0, =_estack
+  LDR R1, [R0, #0]
+  STR R0, [R0, #0]
+  LDR R2, =0xDEADBEEF
+  CMP R2, R1
+  BNE NormalStart
+  LDR R0, =_system_isr_vector_table_base
+  LDR SP,[R0, #0]
+  LDR R0,[R0, #4]
+  BX R0
+NormalStart:
   bl pwrResetHandler    /*jump to WDT reset handler where soft power control pin is turned on as soon as possible */
 
 /* Copy the data segment initializers from flash to SRAM */  

@@ -2,7 +2,7 @@
  * Copyright (C) OpenTX
  *
  * Based on code named
- *   th9x - http://code.google.com/p/th9x 
+ *   th9x - http://code.google.com/p/th9x
  *   er9x - http://code.google.com/p/er9x
  *   gruvin9x - http://code.google.com/p/gruvin9x
  *
@@ -18,9 +18,7 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _PWR_H_
-#define _PWR_H_
-
+#pragma once
 
 enum PowerState {
   e_power_on,
@@ -28,9 +26,7 @@ enum PowerState {
   e_power_usb,
   e_power_off,
   e_power_press,
-#if defined (PCBFLYSKY)
+#if defined(PCBFLYSKY)
   e_power_low,
 #endif
 };
-
-#endif // _PWR_H_

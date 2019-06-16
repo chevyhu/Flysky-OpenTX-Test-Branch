@@ -337,7 +337,10 @@
 #define LCD_RCC_AHB1Periph              (RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOF | RCC_AHB1Periph_GPIOI | RCC_AHB1Periph_GPIOJ | RCC_AHB1Periph_GPIOK | RCC_AHB1Periph_DMA2D)
 #define LCD_RCC_APB1Periph              0
 #define LCD_RCC_APB2Periph              RCC_APB2Periph_LTDC
-#if defined(PCBX12S)
+#if defined(PCBNV14)
+#define LCD_GPIO_NRST GPIOI
+#define LCD_GPIO_PIN_NRST GPIO_Pin_10  // PI.10
+#elif defined(PCBX12S)
   #define LCD_GPIO_NRST                 GPIOF
   #define LCD_GPIO_PIN_NRST             GPIO_Pin_10 // PF.10
 #elif defined(PCBX10)
