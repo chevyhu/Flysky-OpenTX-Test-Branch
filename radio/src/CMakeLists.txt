@@ -20,10 +20,10 @@ set_property(CACHE SPLASH PROPERTY STRINGS DEFAULT OFF FRSKY)
 set(PPM_UNIT "PERCENT_PREC1" CACHE STRING "PPM display unit (US/PERCENT_PREC1/PERCENT_PREC0)")
 set_property(CACHE PPM_UNIT PROPERTY STRINGS US PERCENT_PREC1 PERCENT_PREC0)
 set(DEFAULT_MODE "" CACHE STRING "Default sticks mode")
-set(FONT "STD" CACHE STRING "Choose font : STD or SQT5")
+set(FONT "SQT5" CACHE STRING "Choose font : STD or SQT5")
 set_property(CACHE FONT PROPERTY STRINGS SQT5)
 
-option(HELI "Heli menu" ON)
+option(HELI "Heli menu" OFF)
 option(FLIGHT_MODES "Flight Modes" ON)
 option(CURVES "Curves" ON)
 option(GVARS "Global variables" ON)
@@ -50,7 +50,7 @@ option(TRACE_SIMPGMSPACE "Turn on traces in simpgmspace.cpp" ON)
 option(TRACE_LUA_INTERNALS "Turn on traces for Lua internals" OFF)
 option(FRSKY_STICKS "Reverse sticks for FrSky sticks" OFF)
 option(FLYSKY_HALL_STICKS "sticks for FlySky hall sticks" ON)
-option(NANO "Use nano newlib and binalloc")
+option(NANO "Use nano newlib and binalloc" ON)
 option(NIGHTLY_BUILD_WARNING "Warn this is a nightly build" OFF)
 option(USEHORUSBT "X9E BT module replaced by Horus BT module" OFF)
 option(BOOTLOADER "Include Bootloader" OFF)
@@ -474,7 +474,9 @@ set(CMAKE_EXE_LINKER_FLAGS "")
 set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET>")
 set(CMAKE_CXX_LINK_EXECUTABLE "<CMAKE_CXX_COMPILER> <FLAGS> <LINK_FLAGS> <OBJECTS>  -o <TARGET>")
 
-use_cxx11()  # ensure gnu++11 in CXX_FLAGS with CMake < 3.1
+# Use the official way
+# use_cxx11()  # ensure gnu++11 in CXX_FLAGS with CMake < 3.1
+set (CMAKE_CXX_STANDARD 11)
 
 find_program(BASH bash HINTS "c:/cygwin/bin/" "c:/msys/bin/" DOC "bash shell for firmware size report (eg. c:/cygwin/bin/bash.exe on Windows).")
 

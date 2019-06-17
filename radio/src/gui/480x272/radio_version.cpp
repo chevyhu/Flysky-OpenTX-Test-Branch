@@ -19,93 +19,84 @@
  */
 
 #include "radio_version.h"
-#include "opentx.h"
 #include "libwindows.h"
+#include "opentx.h"
+#include "pwr.h"
 
-enum QR_Code
-{
-  QR_CODE_QUICK_START,
-  QR_CODE_USER_MANUAL
-};
+enum QR_Code { QR_CODE_QUICK_START, QR_CODE_USER_MANUAL };
 
 class QR_CodeBody : public Window {
-  public:
-    QR_CodeBody(Window * parent, const rect_t &rect, uint8_t QR_Index) :
-      Window(parent, rect),
-      QR_Index(QR_Index)
-    {
+ public:
+  QR_CodeBody(Window *parent, const rect_t &rect, uint8_t QR_Index)
+      : Window(parent, rect), QR_Index(QR_Index) {}
+
+  void checkEvents() override { invalidate(); }
+
+  void paint(BitmapBuffer *dc) override {
+    if (QR_Index == QR_CODE_QUICK_START) {
+      static BitmapBuffer *quickStartBitmap =
+          BitmapBuffer::loadMask(getThemePath("quick_start_guide.png"));
+
+      lcd->setOffset(0, 0);
+      lcd->clearClippingRect();
+
+      lcd->drawBitmap((LCD_W - quickStartBitmap->getWidth()) / 2,
+                      (LCD_H - quickStartBitmap->getHeight()) / 2,
+                      quickStartBitmap);
+    } else if (QR_Index == QR_CODE_USER_MANUAL) {
+      static BitmapBuffer *userManulBitmap =
+          BitmapBuffer::loadMask(getThemePath("user_manual.png"));
+
+      lcd->setOffset(0, 0);
+      lcd->clearClippingRect();
+
+      lcd->drawBitmap((LCD_W - userManulBitmap->getWidth()) / 2,
+                      (LCD_H - userManulBitmap->getHeight()) / 2,
+                      userManulBitmap);
     }
+  }
 
-    void checkEvents() override
-    {
-      invalidate();
-    }
-
-    void paint(BitmapBuffer * dc) override
-    {
-      if (QR_Index == QR_CODE_QUICK_START){
-        static BitmapBuffer * quickStartBitmap = BitmapBuffer::loadMask(getThemePath("quick_start_guide.png"));
-
-        lcd->setOffset(0, 0);
-        lcd->clearClippingRect();
-
-        lcd->drawBitmap((LCD_W - quickStartBitmap->getWidth()) / 2, (LCD_H - quickStartBitmap->getHeight()) / 2, quickStartBitmap);
-      }
-      else if (QR_Index == QR_CODE_USER_MANUAL){
-        static BitmapBuffer * userManulBitmap = BitmapBuffer::loadMask(getThemePath("user_manual.png"));
-
-        lcd->setOffset(0, 0);
-        lcd->clearClippingRect();
-
-        lcd->drawBitmap((LCD_W - userManulBitmap->getWidth()) / 2, (LCD_H - userManulBitmap->getHeight()) / 2, userManulBitmap);
-      }
-    }
-
-  protected:
-    uint8_t QR_Index;
+ protected:
+  uint8_t QR_Index;
 };
 
 class QR_CodePage : public PageTab {
-  public:
-    QR_CodePage(uint8_t QR_Index) :
-      PageTab(QR_Index == QR_CODE_QUICK_START ? STR_QUICK_START_GUIDE:STR_USER_MANUAL, ICON_RADIO_VERSION),
-      QR_Index(QR_Index)
-    {
-    }
+ public:
+  QR_CodePage(uint8_t QR_Index)
+      : PageTab(QR_Index == QR_CODE_QUICK_START ? STR_QUICK_START_GUIDE
+                                                : STR_USER_MANUAL,
+                ICON_RADIO_VERSION),
+        QR_Index(QR_Index) {}
 
-    void build(Window * window) override
-    {
-      new QR_CodeBody(window, {0, 0, LCD_W, window->height() - footerHeight}, QR_Index);
-    }
+  void build(Window *window) override {
+    new QR_CodeBody(window, {0, 0, LCD_W, window->height() - footerHeight},
+                    QR_Index);
+  }
 
-  protected:
-    static constexpr coord_t footerHeight = 30;
-    uint8_t QR_Index;
+ protected:
+  static constexpr coord_t footerHeight = 30;
+  uint8_t QR_Index;
 };
 
-QR_CodeMenu::QR_CodeMenu(uint8_t QR_Index) :
-  TabsGroup()
-{
+QR_CodeMenu::QR_CodeMenu(uint8_t QR_Index) : TabsGroup() {
   addTab(new QR_CodePage(QR_Index));
 }
 
-RadioVersionPage::RadioVersionPage():
-  PageTab(STR_MENUVERSION, ICON_RADIO_VERSION)
-{
-}
+RadioVersionPage::RadioVersionPage()
+    : PageTab(STR_MENUVERSION, ICON_RADIO_VERSION) {}
 
-void RadioVersionPage::build(Window * window)
-{
+void RadioVersionPage::build(Window *window) {
   GridLayout grid;
-  //grid.setLabelWidth(60);
+  // grid.setLabelWidth(60);
   grid.spacer(8);
 
   getCPUUniqueID(reusableBuffer.version.id);
 
   new StaticText(window, grid.getLabelSlot(), "FW Version :");
   new StaticText(window, grid.getFieldSlot(), vers_stamp);
-  //grid.nextLine(12);
-  //new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26}, vers_stamp);
+  // grid.nextLine(12);
+  // new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26},
+  // vers_stamp);
   grid.nextLine();
 
   new StaticText(window, grid.getLabelSlot(), "Data version");
@@ -120,18 +111,60 @@ void RadioVersionPage::build(Window * window)
   new StaticText(window, grid.getFieldSlot(), time_stamp);
   grid.nextLine();
 
-
   new StaticText(window, grid.getLabelSlot(), "CPU UID :");
   grid.nextLine(12);
+<<<<<<< HEAD
+<<<<<<< HEAD
+  new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26},
+                 reusableBuffer.version.id);
+  grid.nextLine();
+
+/*
+=======
   new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26}, reusableBuffer.version.id);
   grid.nextLine();
 
 
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
+=======
+  new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26}, reusableBuffer.version.id);
+  grid.nextLine();
+
+
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
   new TextButton(window, {LCD_W/2-125, window->height() - 150, 250, 30}, STR_QUICK_START_GUIDE, [=]() -> int8_t {
       new QR_CodeMenu(QR_CODE_QUICK_START);
       return 1;
   });
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+  new TextButton(window, {LCD_W/2-125, window->height() - 150, 250, 30},
+  STR_USER_MANUAL, [=]() -> int8_t { new QR_CodeMenu(QR_CODE_USER_MANUAL);
+      return 1;
+  });
+*/
+  new TextButton(window, {LCD_W/2-125, window->height() - 100, 250, 30}, STR_FACTORYRESET, [=]() -> int8_t {
+	auto dialog = new Dialog(WARNING_TYPE_INPUT, STR_CONFIRMRESET, STR_STORAGE_FORMAT, [=]() {
+		  storageEraseAll(false);
+                  pwrSoftReboot();
+                  return 0;
+    });
+	dialog->runForever();
+    return 0;
+  });
+#if !defined(SIMU)
+  //STR_CONFIRMFWUPDATE, STR_FWUPDATEMESSAGE
+  new TextButton(window, {LCD_W/2-125, window->height() - 50, 250, 30}, STR_FIRMWAREUPDATE, [=]() -> int8_t {
+	  auto dialog = new Dialog(WARNING_TYPE_INPUT, STR_FIRMWAREUPDATE, STR_FW_UPDATE_QUESTION, [=]() {
+		  *((unsigned int *)(_estack)) = BOOTLOADER_MAGIC;
+		  pwrSoftReboot();
+		  return 0;
+	  });
+	  dialog->runForever();
+=======
+=======
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
   new TextButton(window, {LCD_W/2-125, window->height() - 100, 250, 30}, STR_USER_MANUAL, [=]() -> int8_t {
       new QR_CodeMenu(QR_CODE_USER_MANUAL);
       return 1;
@@ -143,6 +176,11 @@ void RadioVersionPage::build(Window * window)
       return 0;
     });
 	dialog->runForever();
+<<<<<<< HEAD
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
+=======
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
     return 0;
   });
+#endif
 }

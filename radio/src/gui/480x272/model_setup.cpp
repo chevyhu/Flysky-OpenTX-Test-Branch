@@ -18,24 +18,26 @@
  * GNU General Public License for more details.
  */
 
-#include "model_setup.h"
-#include "opentx.h"
-#include "libwindows.h"
 #include "model_crossfire.h"
 
-#define SET_DIRTY()     storageDirty(EE_MODEL)
-#define STR_4BIND(v)    ((moduleFlag[moduleIndex] == MODULE_BIND) ? STR_MODULE_BINDING : (v))
+#include "libwindows.h"
+#include "model_setup.h"
 
-void moduleFlagBackNormal(uint8_t moduleIndex)
-{
+#include "opentx.h"
+#include "translations.h"
+
+#define SET_DIRTY() storageDirty(EE_MODEL)
+#define STR_4BIND(v) \
+  ((moduleFlag[moduleIndex] == MODULE_BIND) ? STR_MODULE_BINDING : (v))
+
+void moduleFlagBackNormal(uint8_t moduleIndex) {
   if (moduleFlag[moduleIndex] != MODULE_NORMAL_MODE) {
     moduleFlag[moduleIndex] = MODULE_NORMAL_MODE;
-    if(isModuleFlysky(moduleIndex)) resetPulsesFlySky(moduleIndex);
+    if (isModuleFlysky(moduleIndex)) resetPulsesFlySky(moduleIndex);
   }
 }
 
-void resetModuleSettings(uint8_t module)
-{
+void resetModuleSettings(uint8_t module) {
   g_model.moduleData[module].channelsStart = 0;
   g_model.moduleData[module].channelsCount = defaultModuleChannels_M8(module);
   g_model.moduleData[module].rfProtocol = 0;
@@ -45,496 +47,555 @@ void resetModuleSettings(uint8_t module)
   moduleFlagBackNormal(module);
 }
 
-class ChannelFailsafeBargraph: public Window {
-  public:
-    ChannelFailsafeBargraph(Window * parent, const rect_t & rect, uint8_t moduleIndex, uint8_t channel):
-      Window(parent, rect),
-      moduleIndex(moduleIndex),
-      channel(channel)
-    {
-    }
+class ChannelFailsafeBargraph : public Window {
+ public:
+  ChannelFailsafeBargraph(Window *parent, const rect_t &rect,
+                          uint8_t moduleIndex, uint8_t channel)
+      : Window(parent, rect), moduleIndex(moduleIndex), channel(channel) {}
 
-    void checkEvents() override
-    {
-      invalidate();
-    }
+  void checkEvents() override { invalidate(); }
 
+  void paint(BitmapBuffer *dc) override {
+    int32_t failsafeValue =
+        g_model.moduleData[moduleIndex].failsafeChannels[channel];
+    int32_t channelValue = channelOutputs[channel];
 
-    void paint(BitmapBuffer * dc) override
-    {
-      int32_t failsafeValue = g_model.moduleData[moduleIndex].failsafeChannels[channel];
-      int32_t channelValue = channelOutputs[channel];
+    const int lim =
+        (g_model.extendedLimits ? (512 * LIMIT_EXT_PERCENT / 100) : 512) * 2;
 
-      const int lim = (g_model.extendedLimits ? (512 * LIMIT_EXT_PERCENT / 100) : 512) * 2;
+    coord_t x = 0;
+    lcdDrawRect(x, 0, width(), height());
+    const coord_t lenChannel = limit(
+        (uint8_t)1, uint8_t((abs(channelValue) * width() / 2 + lim / 2) / lim),
+        uint8_t(width() / 2));
+    const coord_t lenFailsafe = limit(
+        (uint8_t)1, uint8_t((abs(failsafeValue) * width() / 2 + lim / 2) / lim),
+        uint8_t(width() / 2));
+    x += width() / 2;
+    const coord_t xChannel = (channelValue > 0) ? x : x + 1 - lenChannel;
+    const coord_t xFailsafe = (failsafeValue > 0) ? x : x + 1 - lenFailsafe;
+    lcdDrawSolidFilledRect(xChannel, +2, lenChannel, (height() / 2) - 3,
+                           TEXT_COLOR);
+    lcdDrawSolidFilledRect(xFailsafe, (height() / 2) + 1, lenFailsafe,
+                           (height() / 2) - 3, ALARM_COLOR);
+  }
 
-      coord_t x = 0;
-      lcdDrawRect(x, 0, width(), height());
-      const coord_t lenChannel = limit((uint8_t) 1, uint8_t((abs(channelValue) * width() / 2 + lim / 2) / lim),
-                                       uint8_t(width() / 2));
-      const coord_t lenFailsafe = limit((uint8_t) 1, uint8_t((abs(failsafeValue) * width() / 2 + lim / 2) / lim),
-                                        uint8_t(width() / 2));
-      x += width() / 2;
-      const coord_t xChannel = (channelValue > 0) ? x : x + 1 - lenChannel;
-      const coord_t xFailsafe = (failsafeValue > 0) ? x : x + 1 - lenFailsafe;
-      lcdDrawSolidFilledRect(xChannel, + 2, lenChannel, (height() / 2) - 3, TEXT_COLOR);
-      lcdDrawSolidFilledRect(xFailsafe, (height() / 2) + 1, lenFailsafe, (height() / 2) - 3, ALARM_COLOR);
-    }
-
-  protected:
-    uint8_t moduleIndex;
-    uint8_t channel;
+ protected:
+  uint8_t moduleIndex;
+  uint8_t channel;
 };
 
 class FailSafeBody : public Window {
-  public:
-    FailSafeBody(Window * parent, const rect_t &rect, uint8_t moduleIndex) :
-      Window(parent, rect),
-      moduleIndex(moduleIndex)
-    {
-      build();
-    }
+ public:
+  FailSafeBody(Window *parent, const rect_t &rect, uint8_t moduleIndex)
+      : Window(parent, rect), moduleIndex(moduleIndex) {
+    build();
+  }
 
-    void checkEvents() override
-    {
-      invalidate();
-    }
+  void checkEvents() override { invalidate(); }
 
-    void build()
-    {
-      GridLayout grid;
-      grid.setLabelWidth(60);
-      grid.spacer(8);
+  void build() {
+    GridLayout grid;
+    grid.setLabelWidth(60);
+    grid.spacer(8);
 
-      const int lim = (g_model.extendedLimits ? (512 * LIMIT_EXT_PERCENT / 100) : 512) * 2;
+    const int lim =
+        (g_model.extendedLimits ? (512 * LIMIT_EXT_PERCENT / 100) : 512) * 2;
 
-      for (int ch=0; ch < maxModuleChannels(moduleIndex); ch++) {
-        // Channel name
-        // TODO if (g_model.limitData[ch].name[0] != '\0') { <= add channel name
-        new StaticText(this, grid.getLabelSlot(), getSourceString(MIXSRC_CH1 + ch));
+    for (int ch = 0; ch < maxModuleChannels(moduleIndex); ch++) {
+      // Channel name
+      // TODO if (g_model.limitData[ch].name[0] != '\0') { <= add channel name
+      new StaticText(this, grid.getLabelSlot(),
+                     getSourceString(MIXSRC_CH1 + ch));
 
-        // Channel numeric value
-        new NumberEdit(this, grid.getFieldSlot(3, 0), -lim, lim,
-                       GET_DEFAULT(g_model.moduleData[moduleIndex].failsafeChannels[ch]),
-                       //GET_DEFAULT(calcRESXto1000(g_model.moduleData[moduleIndex].failsafeChannels[ch])),
-                       SET_VALUE(g_model.moduleData[moduleIndex].failsafeChannels[ch], newValue), PREC1);
+      // Channel numeric value
+      new NumberEdit(
+          this, grid.getFieldSlot(3, 0), -lim, lim,
+          GET_DEFAULT(g_model.moduleData[moduleIndex].failsafeChannels[ch]),
+          // GET_DEFAULT(calcRESXto1000(g_model.moduleData[moduleIndex].failsafeChannels[ch])),
+          SET_VALUE(g_model.moduleData[moduleIndex].failsafeChannels[ch],
+                    newValue),
+          PREC1);
 
-        // Channel bargraph
-        new ChannelFailsafeBargraph(this, {150, grid.getWindowHeight(), 150, lineHeight}, moduleIndex, ch);
-        grid.nextLine();
-      }
-
-      auto out2fail = new TextButton(this, grid.getLineSlot(), STR_OUTPUTS2FAILSAFE);
-      out2fail->setPressHandler([=]() {
-        setCustomFailsafe(moduleIndex);
-        storageDirty(EE_MODEL);
-        return 0;
-      });
-
+      // Channel bargraph
+      new ChannelFailsafeBargraph(
+          this, {150, grid.getWindowHeight(), 150, lineHeight}, moduleIndex,
+          ch);
       grid.nextLine();
-      setInnerHeight(grid.getWindowHeight());
     }
 
-  protected:
-    uint8_t moduleIndex;
+    auto out2fail =
+        new TextButton(this, grid.getLineSlot(), STR_OUTPUTS2FAILSAFE);
+    out2fail->setPressHandler([=]() {
+      setCustomFailsafe(moduleIndex);
+      storageDirty(EE_MODEL);
+      return 0;
+    });
+
+    grid.nextLine();
+    setInnerHeight(grid.getWindowHeight());
+  }
+
+ protected:
+  uint8_t moduleIndex;
 };
 
 class FailSafeFooter : public Window {
-  public:
-    FailSafeFooter(Window * parent, const rect_t &rect) :
-      Window(parent, rect)
-    {
-    }
+ public:
+  FailSafeFooter(Window *parent, const rect_t &rect) : Window(parent, rect) {}
 
-    void paint(BitmapBuffer * dc) override
-    {
-    }
+  void paint(BitmapBuffer *dc) override {}
 };
 
 class FailSafePage : public PageTab {
-  public:
-    FailSafePage(uint8_t moduleIndex) :
-      PageTab("FAILSAFE", ICON_STATS_ANALOGS),
-      moduleIndex(moduleIndex)
-    {
-    }
+ public:
+  FailSafePage(uint8_t moduleIndex)
+      : PageTab("FAILSAFE", ICON_STATS_ANALOGS), moduleIndex(moduleIndex) {}
 
-    void build(Window * window) override
-    {
-      new FailSafeBody(window, {0, 0, LCD_W, window->height() - footerHeight}, moduleIndex );
-      new FailSafeFooter(window, {0, window->height() - footerHeight, LCD_W, footerHeight});
-    }
+  void build(Window *window) override {
+    new FailSafeBody(window, {0, 0, LCD_W, window->height() - footerHeight},
+                     moduleIndex);
+    new FailSafeFooter(
+        window, {0, window->height() - footerHeight, LCD_W, footerHeight});
+  }
 
-  protected:
-    static constexpr coord_t footerHeight = 30;
-    uint8_t moduleIndex;
+ protected:
+  static constexpr coord_t footerHeight = 30;
+  uint8_t moduleIndex;
 };
 
-FailSafeMenu::FailSafeMenu(uint8_t moduleIndex) :
-  TabsGroup()
-{
+FailSafeMenu::FailSafeMenu(uint8_t moduleIndex) : TabsGroup() {
   addTab(new FailSafePage(moduleIndex));
 }
 
 class ModuleWindow : public Window {
-  public:
-    ModuleWindow(Window * parent, const rect_t &rect, uint8_t moduleIndex) :
-      Window(parent, rect),
-      moduleIndex(moduleIndex)
-    {
-      update();
-    }
+ public:
+  ModuleWindow(Window *parent, const rect_t &rect, uint8_t moduleIndex)
+      : Window(parent, rect), moduleIndex(moduleIndex) {
+    update();
+  }
 
-    ~ModuleWindow()
-    {
-      deleteChildren();
-    }
+  ~ModuleWindow() { deleteChildren(); }
 
-  protected:
-    uint8_t moduleIndex;
-    Choice * moduleChoice = nullptr;
-    TextButton * bindButton = nullptr;
-    TextButton * rangeButton = nullptr;
-    Choice * failSafeChoice = nullptr;
+ protected:
+  uint8_t moduleIndex;
+  Choice *moduleChoice = nullptr;
+  TextButton *bindButton = nullptr;
+  TextButton *rangeButton = nullptr;
+  Choice *failSafeChoice = nullptr;
 
-    void addChannelRange(GridLayout &grid, uint8_t moduleIndex)
-    {
-      new StaticText(this, grid.getLabelSlot(true), STR_CHANNELRANGE);
-      auto channelStart = new NumberEdit(this, grid.getFieldSlot(2, 0), 1,
-                                         MAX_OUTPUT_CHANNELS - sentModuleChannels(moduleIndex) + 1,
-                                         GET_DEFAULT(1 + g_model.moduleData[moduleIndex].channelsStart));
-      auto channelEnd = new NumberEdit(this, grid.getFieldSlot(2, 1),
-                                       g_model.moduleData[moduleIndex].channelsStart + minModuleChannels(moduleIndex),
-                                       min<int8_t>(MAX_OUTPUT_CHANNELS, g_model.moduleData[moduleIndex].channelsStart + maxModuleChannels(moduleIndex)),
-                                       GET_DEFAULT(g_model.moduleData[moduleIndex].channelsStart + 8 + g_model.moduleData[moduleIndex].channelsCount));
+  void addChannelRange(GridLayout &grid, uint8_t moduleIndex) {
+    new StaticText(this, grid.getLabelSlot(true), STR_CHANNELRANGE);
+    auto channelStart = new NumberEdit(
+        this, grid.getFieldSlot(2, 0), 1,
+        MAX_OUTPUT_CHANNELS - sentModuleChannels(moduleIndex) + 1,
+        GET_DEFAULT(1 + g_model.moduleData[moduleIndex].channelsStart));
+    auto channelEnd = new NumberEdit(
+        this, grid.getFieldSlot(2, 1),
+        g_model.moduleData[moduleIndex].channelsStart +
+            minModuleChannels(moduleIndex),
+        min<int8_t>(MAX_OUTPUT_CHANNELS,
+                    g_model.moduleData[moduleIndex].channelsStart +
+                        maxModuleChannels(moduleIndex)),
+        GET_DEFAULT(g_model.moduleData[moduleIndex].channelsStart + 8 +
+                    g_model.moduleData[moduleIndex].channelsCount));
 
-      channelStart->setPrefix(STR_CH);
-      channelEnd->setPrefix(STR_CH);
-      channelStart->setSetValueHandler([=](int32_t newValue) {
-        g_model.moduleData[moduleIndex].channelsStart = newValue - 1;
-        SET_DIRTY();
-        channelEnd->setMin(g_model.moduleData[moduleIndex].channelsStart + minModuleChannels(moduleIndex));
-        channelEnd->setMax(min<int8_t>(MAX_OUTPUT_CHANNELS, g_model.moduleData[moduleIndex].channelsStart + maxModuleChannels(moduleIndex)));
-        channelEnd->invalidate();
-      });
-      channelEnd->setSetValueHandler([=](int32_t newValue) {
-        g_model.moduleData[moduleIndex].channelsCount = newValue - g_model.moduleData[moduleIndex].channelsStart - 8;
-        SET_DIRTY();
-        channelStart->setMax(MAX_OUTPUT_CHANNELS - sentModuleChannels(moduleIndex) + 1);
-      });
-      channelEnd->enable(minModuleChannels(moduleIndex) < maxModuleChannels(moduleIndex));
-    }
+    channelStart->setPrefix(STR_CH);
+    channelEnd->setPrefix(STR_CH);
+    channelStart->setSetValueHandler([=](int32_t newValue) {
+      g_model.moduleData[moduleIndex].channelsStart = newValue - 1;
+      SET_DIRTY();
+      channelEnd->setMin(g_model.moduleData[moduleIndex].channelsStart +
+                         minModuleChannels(moduleIndex));
+      channelEnd->setMax(min<int8_t>(
+          MAX_OUTPUT_CHANNELS, g_model.moduleData[moduleIndex].channelsStart +
+                                   maxModuleChannels(moduleIndex)));
+      channelEnd->invalidate();
+    });
+    channelEnd->setSetValueHandler([=](int32_t newValue) {
+      g_model.moduleData[moduleIndex].channelsCount =
+          newValue - g_model.moduleData[moduleIndex].channelsStart - 8;
+      SET_DIRTY();
+      channelStart->setMax(MAX_OUTPUT_CHANNELS -
+                           sentModuleChannels(moduleIndex) + 1);
+    });
+    channelEnd->enable(minModuleChannels(moduleIndex) <
+                       maxModuleChannels(moduleIndex));
+  }
 
-    void update()
-    {
-      GridLayout grid;
-      uint8_t moduleType = g_model.moduleData[moduleIndex].type;
+  void update() {
+    GridLayout grid;
+    uint8_t moduleType = g_model.moduleData[moduleIndex].type;
 
-      clear();
+    clear();
 
-      // Module Type
-      new StaticText(this, grid.getLabelSlot(true), STR_MODE);
-      moduleChoice = new Choice(this, grid.getFieldSlot(2, 0), STR_MODULE_PROTOCOLS,
-                                MODULE_TYPE_NONE, MODULE_TYPE_COUNT - 1,
-                                GET_DEFAULT(g_model.moduleData[moduleIndex].type),
-                                [=](int32_t newValue) {
-                                  g_model.moduleData[moduleIndex].type = newValue;
-                                  SET_DIRTY();
-                                  resetModuleSettings(moduleIndex);
-                                  onFlySkyModuleSetPower(moduleIndex, newValue == MODULE_TYPE_FLYSKY);
-                                  update();
-                                  moduleChoice->setFocus();
-                                });
-      moduleChoice->setAvailableHandler([=](int8_t moduleType) {
-        return isModuleTypeAllowed(moduleIndex, moduleType);
-      });
-
-      // Module parameters
-      if (isModuleFlysky(moduleIndex)) {
-        new Choice(this, grid.getFieldSlot(2, 1), STR_FLYSKY_PROTOCOLS, 0, 3,
-                   GET_DEFAULT(g_model.moduleData[moduleIndex].romData.mode),
-                   [=](int32_t newValue) -> void {
-                     g_model.moduleData[moduleIndex].romData.mode = newValue;
-                     SET_DIRTY();
-                     moduleFlagBackNormal(moduleIndex);
-                     onFlySkyReceiverSetPulse(INTERNAL_MODULE, newValue);
-                   });
-      }
-
-      if (isModuleXJT(moduleIndex)) {
-        auto xjtChoice = new Choice(this, grid.getFieldSlot(2, 1), STR_XJT_PROTOCOLS, RF_PROTO_OFF, RF_PROTO_LAST,
-                                    GET_SET_DEFAULT(g_model.moduleData[moduleIndex].rfProtocol));
-        xjtChoice->setAvailableHandler([](int index) {
-          return index != RF_PROTO_OFF;
+    // Module Type
+    new StaticText(this, grid.getLabelSlot(true), STR_MODE);
+    moduleChoice = new Choice(
+        this, grid.getFieldSlot(2, 0), STR_MODULE_PROTOCOLS, MODULE_TYPE_NONE,
+        MODULE_TYPE_COUNT - 1,
+        GET_DEFAULT(g_model.moduleData[moduleIndex].type),
+        [=](int32_t newValue) {
+          g_model.moduleData[moduleIndex].type = newValue;
+          SET_DIRTY();
+          resetModuleSettings(moduleIndex);
+          onFlySkyModuleSetPower(moduleIndex, newValue == MODULE_TYPE_FLYSKY);
+          update();
+          moduleChoice->setFocus();
         });
-      }
+    moduleChoice->setAvailableHandler([=](int8_t moduleType) {
+      return isModuleTypeAllowed(moduleIndex, moduleType);
+    });
 
-      if (isModuleDSM2(moduleIndex)) {
-        new Choice(this, grid.getFieldSlot(2, 1), STR_DSM_PROTOCOLS, DSM2_PROTO_LP45, DSM2_PROTO_DSMX,
-                   GET_SET_DEFAULT(g_model.moduleData[moduleIndex].rfProtocol));
-      }
+    // Module parameters
+    if (isModuleFlysky(moduleIndex)) {
+      new Choice(this, grid.getFieldSlot(2, 1), STR_FLYSKY_PROTOCOLS, 0, 3,
+                 GET_DEFAULT(g_model.moduleData[moduleIndex].romData.mode),
+                 [=](int32_t newValue) -> void {
+                   g_model.moduleData[moduleIndex].romData.mode = newValue;
+                   SET_DIRTY();
+                   moduleFlagBackNormal(moduleIndex);
+                   onFlySkyReceiverSetPulse(INTERNAL_MODULE, newValue);
+                 });
+    }
 
-      if (isModuleR9M(moduleIndex)) {
-        new Choice(this, grid.getFieldSlot(2, 1), STR_R9M_MODES, MODULE_SUBTYPE_R9M_FCC,
-                   MODULE_SUBTYPE_R9M_LBT,
-                   GET_DEFAULT(g_model.moduleData[moduleIndex].subType),
-                   [=](int32_t newValue) {
-                     g_model.moduleData[moduleIndex].subType = newValue;
-                     SET_DIRTY();
-                     update();
-                   });
-      }
+    if (isModuleXJT(moduleIndex)) {
+      auto xjtChoice = new Choice(
+          this, grid.getFieldSlot(2, 1), STR_XJT_PROTOCOLS, RF_PROTO_OFF,
+          RF_PROTO_LAST,
+          GET_SET_DEFAULT(g_model.moduleData[moduleIndex].rfProtocol));
+      xjtChoice->setAvailableHandler(
+          [](int index) { return index != RF_PROTO_OFF; });
+    }
 
-      if (isModulePPM(moduleIndex)) {
-        new Choice(this, grid.getFieldSlot(2, 1), "\006""     +""     -", 0,
-                   1,
-                   GET_DEFAULT(g_model.moduleData[moduleIndex].ppm.pulsePol),
-                   [=](int32_t newValue) {
-                     g_model.moduleData[moduleIndex].ppm.pulsePol = newValue;
-                     SET_DIRTY();
-                     update();
-                   });
+    if (isModuleDSM2(moduleIndex)) {
+      new Choice(this, grid.getFieldSlot(2, 1), STR_DSM_PROTOCOLS,
+                 DSM2_PROTO_LP45, DSM2_PROTO_DSMX,
+                 GET_SET_DEFAULT(g_model.moduleData[moduleIndex].rfProtocol));
+    }
+
+    if (isModuleR9M(moduleIndex)) {
+      new Choice(this, grid.getFieldSlot(2, 1), STR_R9M_MODES,
+                 MODULE_SUBTYPE_R9M_FCC, MODULE_SUBTYPE_R9M_LBT,
+                 GET_DEFAULT(g_model.moduleData[moduleIndex].subType),
+                 [=](int32_t newValue) {
+                   g_model.moduleData[moduleIndex].subType = newValue;
+                   SET_DIRTY();
+                   update();
+                 });
+    }
+
+    if (isModulePPM(moduleIndex)) {
+      new Choice(this, grid.getFieldSlot(2, 1),
+                 "\006"
+                 "     +"
+                 "     -",
+                 0, 1,
+                 GET_DEFAULT(g_model.moduleData[moduleIndex].ppm.pulsePol),
+                 [=](int32_t newValue) {
+                   g_model.moduleData[moduleIndex].ppm.pulsePol = newValue;
+                   SET_DIRTY();
+                   update();
+                 });
+    }
+
+    grid.nextLine();
+
+    // Channel Range
+    if (g_model.moduleData[moduleIndex].type != MODULE_TYPE_NONE) {
+      addChannelRange(grid, moduleIndex);
+      grid.nextLine();
+    }
+
+    // PPM modules
+    if (isModulePPM(moduleIndex)) {
+      // PPM frame
+      new StaticText(this, grid.getLabelSlot(true), STR_PPMFRAME);
+
+      // PPM frame length
+      auto edit = new NumberEdit(
+          this, grid.getFieldSlot(2, 0), 125, 35 * 5 + 225,
+          GET_DEFAULT(g_model.moduleData[moduleIndex].ppm.frameLength * 5 +
+                      225),
+          SET_VALUE(g_model.moduleData[moduleIndex].ppm.frameLength,
+                    (newValue - 225) / 5),
+          PREC1);
+      edit->setStep(5);
+      edit->setSuffix(STR_MS);
+
+      // PPM frame delay
+      edit = new NumberEdit(
+          this, grid.getFieldSlot(2, 1), 100, 800,
+          GET_DEFAULT(g_model.moduleData[moduleIndex].ppm.delay * 50 + 300),
+          SET_VALUE(g_model.moduleData[moduleIndex].ppm.delay,
+                    (newValue - 300) / 50));
+      edit->setStep(50);
+      edit->setSuffix("us");
+      grid.nextLine();
+    }
+
+    // Receiver number
+    if (isModuleNeedingReceiverNumber(moduleIndex)) {
+      new StaticText(this, grid.getLabelSlot(true), STR_RECEIVER_NUM);
+      new NumberEdit(this, grid.getFieldSlot(2, 0), 0, MAX_RX_NUM(moduleIndex),
+                     GET_SET_DEFAULT(g_model.header.modelId[moduleIndex]));
+      grid.nextLine();
+    }
+
+    // Module parameters
+    if (isModuleFlysky(moduleIndex)) {
+      new StaticText(this, grid.getLabelSlot(true), STR_RXFREQUENCY);
+      new NumberEdit(
+          this, grid.getFieldSlot(), 50, 400,
+          GET_DEFAULT(g_model.moduleData[moduleIndex].romData.rx_freq[0] +
+                      g_model.moduleData[moduleIndex].romData.rx_freq[1] * 256),
+          [=](int32_t newValue) -> void {
+            g_model.moduleData[moduleIndex].romData.rx_freq[0] =
+                newValue & 0xFF;
+            g_model.moduleData[moduleIndex].romData.rx_freq[1] = newValue >> 8;
+            SET_DIRTY();
+            moduleFlagBackNormal(moduleIndex);
+            onFlySkyReceiverSetFrequency(INTERNAL_MODULE);
+          });
+      grid.nextLine();
+    }
+
+    // Failsafe
+    if (isModuleNeedingFailsafeButton(moduleIndex)) {
+      new StaticText(this, grid.getLabelSlot(true), STR_FAILSAFE);
+      failSafeChoice = new Choice(
+          this, grid.getFieldSlot(2, 0), STR_VFAILSAFE, 0, FAILSAFE_LAST,
+          GET_DEFAULT(g_model.moduleData[moduleIndex].failsafeMode),
+          [=](int32_t newValue) {
+            g_model.moduleData[moduleIndex].failsafeMode = newValue;
+            SET_DIRTY();
+            update();
+            failSafeChoice->setFocus();
+            moduleFlagBackNormal(moduleIndex);
+            SEND_FAILSAFE_NOW(moduleIndex);
+          });
+      failSafeChoice->setAvailableHandler([=](int8_t newValue) {
+        if (isModuleFlysky(moduleIndex))
+          return (newValue == FAILSAFE_NOT_SET || newValue == FAILSAFE_CUSTOM);
+        else
+          return true;
+      });
+      if (g_model.moduleData[moduleIndex].failsafeMode == FAILSAFE_CUSTOM) {
+        new TextButton(this, grid.getFieldSlot(2, 1), STR_SET,
+                       [=]() -> uint8_t {
+                         new FailSafeMenu(moduleIndex);
+                         return 1;
+                       });
       }
+      grid.nextLine();
+    }
+
+    // Bind and Range buttons
+    if (isModuleNeedingBindRangeButtons(moduleIndex)) {
+      bindButton = new TextButton(this, grid.getFieldSlot(2, 0),
+                                  STR_4BIND(STR_MODULE_BIND));
+      bindButton->setPressHandler([=]() -> uint8_t {
+        if (moduleFlag[moduleIndex] == MODULE_RANGECHECK) {
+          rangeButton->check(false);
+        }
+        if (moduleFlag[moduleIndex] == MODULE_BIND) {
+          bindButton->setText(STR_MODULE_BIND);
+          moduleFlag[moduleIndex] = MODULE_NORMAL_MODE;
+          if (isModuleFlysky(moduleIndex)) resetPulsesFlySky(moduleIndex);
+          return 0;
+        }
+        else {
+            if (isModuleR9M(moduleIndex) || (isModuleXJT(moduleIndex) && g_model.moduleData[moduleIndex].rfProtocol == RF_PROTO_X16)) {
+				bindButton->setText(STR_MODULE_BINDING);
+				update();
+				bindButton->setFocus();
+				Menu * menu = new Menu();
+				if (isModuleR9M_LBT(moduleIndex)) {
+					menu->addLine(STR_BINDING_25MW_CH1_8_TELEM_OFF, [=]() {
+						onBindMenu(STR_BINDING_25MW_CH1_8_TELEM_OFF);
+					});
+					if (!IS_TELEMETRY_INTERNAL_MODULE()) {
+						menu->addLine(STR_BINDING_25MW_CH1_8_TELEM_ON, [=]() {
+							onBindMenu(STR_BINDING_25MW_CH1_8_TELEM_ON);
+						});
+					}
+					menu->addLine(STR_BINDING_500MW_CH1_8_TELEM_OFF, [=]() {
+						onBindMenu(STR_BINDING_500MW_CH1_8_TELEM_OFF);
+					});
+					menu->addLine(STR_BINDING_500MW_CH9_16_TELEM_OFF, [=]() {
+						onBindMenu(STR_BINDING_500MW_CH9_16_TELEM_OFF);
+					});
+				}
+				else {
+					if (!(IS_TELEMETRY_INTERNAL_MODULE() && moduleIndex == EXTERNAL_MODULE)) {
+						menu->addLine(STR_BINDING_1_8_TELEM_ON, [=]() {
+							onBindMenu(STR_BINDING_1_8_TELEM_ON);
+						});
+					}
+					menu->addLine(STR_BINDING_1_8_TELEM_OFF, [=]() {
+						onBindMenu(STR_BINDING_1_8_TELEM_OFF);
+					});
+
+					if (!(IS_TELEMETRY_INTERNAL_MODULE() && moduleIndex == EXTERNAL_MODULE)) {
+						menu->addLine(STR_BINDING_9_16_TELEM_ON, [=]() {
+							onBindMenu(STR_BINDING_9_16_TELEM_ON);
+						});
+					}
+					menu->addLine(STR_BINDING_9_16_TELEM_OFF, [=]() {
+						onBindMenu(STR_BINDING_9_16_TELEM_OFF);
+					});
+				}
+			}
+			else {
+				bindButton->setText(STR_MODULE_BINDING);
+				moduleFlag[moduleIndex] = MODULE_BIND;
+                if (isModuleFlysky(moduleIndex)) onFlySkyBindReceiver(moduleIndex);
+                return 1;
+            }
+        }
+      });
+      bindButton->setCheckHandler([=]() {
+        if (moduleFlag[moduleIndex] != MODULE_BIND) {
+          bindButton->setText(STR_MODULE_BIND);
+          bindButton->check(false);
+        }
+      });
+
+      rangeButton =
+          new TextButton(this, grid.getFieldSlot(2, 1), STR_MODULE_RANGE);
+      rangeButton->setPressHandler([=]() -> uint8_t {
+        if (moduleFlag[moduleIndex] == MODULE_BIND) {
+          bindButton->setText(STR_MODULE_BIND);
+          bindButton->check(false);
+        }
+        if (moduleFlag[moduleIndex] != MODULE_RANGECHECK) {
+          moduleFlag[moduleIndex] = MODULE_RANGECHECK;
+          if (isModuleFlysky(moduleIndex)) onFlySkyReceiverRange(moduleIndex);
+          return 1;
+        }
+        moduleFlag[moduleIndex] = MODULE_NORMAL_MODE;
+        if (isModuleFlysky(moduleIndex)) resetPulsesFlySky(moduleIndex);
+        return 0;
+      });
+      rangeButton->setCheckHandler([=]() {
+        if (moduleFlag[moduleIndex] != MODULE_RANGECHECK) {
+          rangeButton->check(false);
+        }
+      });
 
       grid.nextLine();
-
-      // Channel Range
-      if (g_model.moduleData[moduleIndex].type != MODULE_TYPE_NONE) {
-        addChannelRange(grid, moduleIndex);
-        grid.nextLine();
-      }
-
-      // PPM modules
-      if (isModulePPM(moduleIndex)) {
-        // PPM frame
-        new StaticText(this, grid.getLabelSlot(true), STR_PPMFRAME);
-
-        // PPM frame length
-        auto edit = new NumberEdit(this, grid.getFieldSlot(2, 0), 125, 35 * 5 + 225,
-                                   GET_DEFAULT(g_model.moduleData[moduleIndex].ppm.frameLength * 5 + 225),
-                                   SET_VALUE(g_model.moduleData[moduleIndex].ppm.frameLength, (newValue - 225) / 5),
-                                   PREC1);
-        edit->setStep(5);
-        edit->setSuffix(STR_MS);
-
-        // PPM frame delay
-        edit = new NumberEdit(this, grid.getFieldSlot(2, 1), 100, 800,
-                              GET_DEFAULT(g_model.moduleData[moduleIndex].ppm.delay * 50 + 300),
-                              SET_VALUE(g_model.moduleData[moduleIndex].ppm.delay, (newValue - 300) / 50));
-        edit->setStep(50);
-        edit->setSuffix("us");
-        grid.nextLine();
-      }
-
-      // Receiver number
-      if (isModuleNeedingReceiverNumber(moduleIndex)) {
-        new StaticText(this, grid.getLabelSlot(true), STR_RECEIVER_NUM);
-        new NumberEdit(this, grid.getFieldSlot(2, 0), 0, MAX_RX_NUM(moduleIndex), GET_SET_DEFAULT(g_model.header.modelId[moduleIndex]));
-        grid.nextLine();
-      }
-
-      // Module parameters
-      if (isModuleFlysky(moduleIndex)) {
-        new StaticText(this, grid.getLabelSlot(true), STR_RXFREQUENCY);
-        new NumberEdit(this, grid.getFieldSlot(), 50, 400,
-                       GET_DEFAULT(g_model.moduleData[moduleIndex].romData.rx_freq[0] +
-                                   g_model.moduleData[moduleIndex].romData.rx_freq[1] * 256),
-                       [=](int32_t newValue) -> void {
-                         g_model.moduleData[moduleIndex].romData.rx_freq[0] = newValue & 0xFF;
-                         g_model.moduleData[moduleIndex].romData.rx_freq[1] = newValue >> 8;
-                         SET_DIRTY();
-                         moduleFlagBackNormal(moduleIndex);
-                         onFlySkyReceiverSetFrequency(INTERNAL_MODULE);
-                       });
-        grid.nextLine();
-      }
-
-      // Failsafe
-      if (isModuleNeedingFailsafeButton(moduleIndex)) {
-        new StaticText(this, grid.getLabelSlot(true), STR_FAILSAFE);
-        failSafeChoice = new Choice(this, grid.getFieldSlot(2, 0), STR_VFAILSAFE, 0, FAILSAFE_LAST,
-                                    GET_DEFAULT(g_model.moduleData[moduleIndex].failsafeMode),
-                                    [=](int32_t newValue) {
-                                      g_model.moduleData[moduleIndex].failsafeMode = newValue;
-                                      SET_DIRTY();
-                                      update();
-                                      failSafeChoice->setFocus();
-                                      moduleFlagBackNormal(moduleIndex);
-                                      SEND_FAILSAFE_NOW(moduleIndex);
-                                    });
-        failSafeChoice->setAvailableHandler([=](int8_t newValue) {
-          if ( isModuleFlysky(moduleIndex) )
-            return (newValue == FAILSAFE_NOT_SET || newValue == FAILSAFE_CUSTOM);
-          else return true;
-        });
-        if (g_model.moduleData[moduleIndex].failsafeMode == FAILSAFE_CUSTOM) {
-          new TextButton(this, grid.getFieldSlot(2, 1), STR_SET,
-                         [=]() -> uint8_t {
-                           new FailSafeMenu(moduleIndex);
-                           return 1;
-                         });
-        }
-        grid.nextLine();
-      }
-
-      // Bind and Range buttons
-      if (isModuleNeedingBindRangeButtons(moduleIndex)) {
-        bindButton = new TextButton(this, grid.getFieldSlot(2, 0), STR_4BIND(STR_MODULE_BIND));
-        bindButton->setPressHandler([=]() -> uint8_t {
-          if (moduleFlag[moduleIndex] == MODULE_RANGECHECK) {
-            rangeButton->check(false);
-          }
-          if (moduleFlag[moduleIndex] == MODULE_BIND) {
-            bindButton->setText(STR_MODULE_BIND);
-            moduleFlag[moduleIndex] = MODULE_NORMAL_MODE;
-            if (isModuleFlysky(moduleIndex))
-              resetPulsesFlySky(moduleIndex);
-            return 0;
-          }
-          else {
-            bindButton->setText(STR_MODULE_BINDING);
-            moduleFlag[moduleIndex] = MODULE_BIND;
-            if (isModuleFlysky(moduleIndex))
-              onFlySkyBindReceiver(moduleIndex);
-            return 1;
-          }
-        });
-        bindButton->setCheckHandler([=]() {
-          if (moduleFlag[moduleIndex] != MODULE_BIND) {
-            bindButton->setText(STR_MODULE_BIND);
-            bindButton->check(false);
-          }
-        });
-
-        rangeButton = new TextButton(this, grid.getFieldSlot(2, 1), STR_MODULE_RANGE);
-        rangeButton->setPressHandler([=]() -> uint8_t {
-          if (moduleFlag[moduleIndex] == MODULE_BIND) {
-            bindButton->setText(STR_MODULE_BIND);
-            bindButton->check(false);
-          }
-          if (moduleFlag[moduleIndex] != MODULE_RANGECHECK) {
-            moduleFlag[moduleIndex] = MODULE_RANGECHECK;
-            if (isModuleFlysky(moduleIndex))
-              onFlySkyReceiverRange(moduleIndex);
-            return 1;
-          }
-          moduleFlag[moduleIndex] = MODULE_NORMAL_MODE;
-          if (isModuleFlysky(moduleIndex))
-            resetPulsesFlySky(moduleIndex);
-          return 0;
-        });
-        rangeButton->setCheckHandler([=]() {
-          if (moduleFlag[moduleIndex] != MODULE_RANGECHECK) {
-            rangeButton->check(false);
-          }
-        });
-
-        grid.nextLine();
-      }
-
-      // R9M Power
-      if (isModuleR9M_FCC(moduleIndex)) {
-        new StaticText(this, grid.getLabelSlot(true), STR_MULTI_RFPOWER);
-        new Choice(this, grid.getFieldSlot(), STR_R9M_FCC_POWER_VALUES, 0, R9M_FCC_POWER_MAX,
-                   GET_SET_DEFAULT(g_model.moduleData[moduleIndex].pxx.power));
-      }
-
-      if (isModuleR9M_LBT(moduleIndex)) {
-        new StaticText(this, grid.getLabelSlot(true), STR_MULTI_RFPOWER);
-        new Choice(this, grid.getFieldSlot(), STR_R9M_LBT_POWER_VALUES, 0, R9M_LBT_POWER_MAX,
-                   GET_DEFAULT(min<uint8_t>(g_model.moduleData[moduleIndex].pxx.power, R9M_LBT_POWER_MAX)),
-                   SET_DEFAULT(g_model.moduleData[moduleIndex].pxx.power));
-      }
-
-#if defined (CROSSFIRE_NATIVE)
-      if(isModuleCrossfire(moduleIndex)){
-          new TextButton(this, grid.getFieldSlot(), STR_CROSSFIRE_SETUP, [=]() -> uint8_t {
-              new CrossfireMenu();
-              return 1;
-          });
-      }
-#endif
-
-      getParent()->moveWindowsTop(top(), adjustHeight());
     }
+
+    // R9M Power
+    if (isModuleR9M_FCC(moduleIndex)) {
+      new StaticText(this, grid.getLabelSlot(true), STR_MULTI_RFPOWER);
+      new Choice(this, grid.getFieldSlot(), STR_R9M_FCC_POWER_VALUES, 0,
+                 R9M_FCC_POWER_MAX,
+                 GET_SET_DEFAULT(g_model.moduleData[moduleIndex].pxx.power));
+    }
+
+    if (isModuleR9M_LBT(moduleIndex)) {
+      new StaticText(this, grid.getLabelSlot(true), STR_MULTI_RFPOWER);
+      new Choice(
+          this, grid.getFieldSlot(), STR_R9M_LBT_POWER_VALUES, 0,
+          R9M_LBT_POWER_MAX,
+          GET_DEFAULT(min<uint8_t>(g_model.moduleData[moduleIndex].pxx.power,
+                                   R9M_LBT_POWER_MAX)),
+          SET_DEFAULT(g_model.moduleData[moduleIndex].pxx.power));
+    }
+
+#if defined(CROSSFIRE_NATIVE)
+    if (isModuleCrossfire(moduleIndex)) {
+      new TextButton(this, grid.getFieldSlot(), STR_CROSSFIRE_SETUP,
+                     [=]() -> uint8_t {
+                       new CrossfireMenu();
+                       return 1;
+                     });
+    }
+#endif
+    getParent()->moveWindowsTop(top(), adjustHeight());
+  }
+
+	void onBindMenu(const char * result)
+	{
+		//uint8_t moduleIdx = 0; // TODO (menuVerticalPosition >= ITEM_MODEL_EXTERNAL_MODULE_LABEL ? EXTERNAL_MODULE : INTERNAL_MODULE);
+
+		if (result == STR_BINDING_25MW_CH1_8_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_25;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_25MW_CH1_8_TELEM_ON) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_25;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = false;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_500MW_CH1_8_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_500;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_500MW_CH9_16_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.power = R9M_LBT_POWER_500;
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = true;
+		}
+		else if (result == STR_BINDING_1_8_TELEM_ON) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = false;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_1_8_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = false;
+		}
+		else if (result == STR_BINDING_9_16_TELEM_ON) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = false;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = true;
+		}
+		else if (result == STR_BINDING_9_16_TELEM_OFF) {
+			g_model.moduleData[moduleIndex].pxx.receiver_telem_off = true;
+			g_model.moduleData[moduleIndex].pxx.receiver_channel_9_16 = true;
+		}
+		else {
+			return;
+		}
+
+		moduleFlag[moduleIndex] = MODULE_BIND;
+	}
 };
 
-ModelSetupPage::ModelSetupPage() :
-  PageTab(STR_MENUSETUP, ICON_MODEL_SETUP)
-{
-}
+ModelSetupPage::ModelSetupPage() : PageTab(STR_MENUSETUP, ICON_MODEL_SETUP) {}
 
 uint8_t g_moduleIdx;
 
-void onBindMenu(const char * result)
-{
-  uint8_t moduleIdx = 0; // TODO (menuVerticalPosition >= ITEM_MODEL_EXTERNAL_MODULE_LABEL ? EXTERNAL_MODULE : INTERNAL_MODULE);
-
-  if (result == STR_BINDING_25MW_CH1_8_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_25;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_25MW_CH1_8_TELEM_ON) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_25;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = false;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_500MW_CH1_8_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_500;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_500MW_CH9_16_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.power = R9M_LBT_POWER_500;
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = true;
-  }
-  else if (result == STR_BINDING_1_8_TELEM_ON) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = false;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_1_8_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = false;
-  }
-  else if (result == STR_BINDING_9_16_TELEM_ON) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = false;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = true;
-  }
-  else if (result == STR_BINDING_9_16_TELEM_OFF) {
-    g_model.moduleData[moduleIdx].pxx.receiver_telem_off = true;
-    g_model.moduleData[moduleIdx].pxx.receiver_channel_9_16 = true;
-  }
-  else {
-    return;
-  }
-
-  moduleFlag[moduleIdx] = MODULE_BIND;
-}
-void ModelSetupPage::build(Window * window)
-{
+void ModelSetupPage::build(Window *window) {
   GridLayout grid;
   grid.spacer(8);
 
   // Model name
   new StaticText(window, grid.getLabelSlot(), STR_MODELNAME);
-  new TextEdit(window, grid.getFieldSlot(), g_model.header.name, sizeof(g_model.header.name));
+  new TextEdit(window, grid.getFieldSlot(), g_model.header.name,
+               sizeof(g_model.header.name));
   grid.nextLine();
 
   // Bitmap
   new StaticText(window, grid.getLabelSlot(), STR_BITMAP);
-  new FileChoice(window, grid.getFieldSlot(), BITMAPS_PATH, BITMAPS_EXT, sizeof(g_model.header.bitmap),
+  new FileChoice(window, grid.getFieldSlot(), BITMAPS_PATH, BITMAPS_EXT,
+                 sizeof(g_model.header.bitmap),
                  [=]() {
-                   return std::string(g_model.header.bitmap, ZLEN(g_model.header.bitmap));
+                   return std::string(g_model.header.bitmap,
+                                      ZLEN(g_model.header.bitmap));
                  },
                  [=](std::string newValue) {
-                   strncpy(g_model.header.bitmap, newValue.c_str(), sizeof(g_model.header.bitmap));
+                   strncpy(g_model.header.bitmap, newValue.c_str(),
+                           sizeof(g_model.header.bitmap));
                    SET_DIRTY();
-                 }, false);
+                 },
+                 false);
   grid.nextLine();
 
   for (uint8_t i = 0; i < TIMERS; i++) {
-    TimerData * timer = &g_model.timers[i];
+    TimerData *timer = &g_model.timers[i];
 
     // Timer label
     char timerLabel[8];
@@ -549,40 +610,54 @@ void ModelSetupPage::build(Window * window)
 
     // Timer mode
     new StaticText(window, grid.getLabelSlot(true), STR_MODE);
-    new SwitchChoice(window, grid.getFieldSlot(2, 0), SWSRC_FIRST, SWSRC_LAST, GET_SET_DEFAULT(timer->swtch));
-    new Choice(window, grid.getFieldSlot(2, 1), "\006""Simple""Thr.\0 ""Thr.%", 0, TMRMODE_COUNT, GET_SET_DEFAULT(timer->mode));
+    new SwitchChoice(window, grid.getFieldSlot(2, 0), SWSRC_FIRST, SWSRC_LAST,
+                     GET_SET_DEFAULT(timer->swtch));
+    new Choice(window, grid.getFieldSlot(2, 1),
+               "\006"
+               "Simple"
+               "Thr.\0 "
+               "Thr.%",
+               0, TMRMODE_COUNT, GET_SET_DEFAULT(timer->mode));
     grid.nextLine();
 
     // Timer start value
     new StaticText(window, grid.getLabelSlot(true), "Start");
-    new TimeEdit(window, grid.getFieldSlot(), 0, TIMER_MAX, GET_SET_DEFAULT(timer->start));
+    new TimeEdit(window, grid.getFieldSlot(), 0, TIMER_MAX,
+                 GET_SET_DEFAULT(timer->start));
     grid.nextLine();
 
     // Timer minute beep
     new StaticText(window, grid.getLabelSlot(true), STR_MINUTEBEEP);
-    new CheckBox(window, grid.getFieldSlot(), GET_SET_DEFAULT(timer->minuteBeep));
+    new CheckBox(window, grid.getFieldSlot(),
+                 GET_SET_DEFAULT(timer->minuteBeep));
     grid.nextLine();
 
     // Timer countdown
     new StaticText(window, grid.getLabelSlot(true), STR_BEEPCOUNTDOWN);
-    new Choice(window, grid.getFieldSlot(2, 0), STR_VBEEPCOUNTDOWN, COUNTDOWN_SILENT, COUNTDOWN_COUNT - 1, GET_SET_DEFAULT(timer->countdownBeep));
-    new Choice(window, grid.getFieldSlot(2, 1), STR_COUNTDOWNVALUES, 0, 3, GET_SET_WITH_OFFSET(timer->countdownStart, 2));
+    new Choice(window, grid.getFieldSlot(2, 0), STR_VBEEPCOUNTDOWN,
+               COUNTDOWN_SILENT, COUNTDOWN_COUNT - 1,
+               GET_SET_DEFAULT(timer->countdownBeep));
+    new Choice(window, grid.getFieldSlot(2, 1), STR_COUNTDOWNVALUES, 0, 3,
+               GET_SET_WITH_OFFSET(timer->countdownStart, 2));
     grid.nextLine();
 
     // Timer persistent
     new StaticText(window, grid.getLabelSlot(true), STR_PERSISTENT);
-    new Choice(window, grid.getFieldSlot(), STR_VPERSISTENT, 0, 2, GET_SET_DEFAULT(timer->persistent));
+    new Choice(window, grid.getFieldSlot(), STR_VPERSISTENT, 0, 2,
+               GET_SET_DEFAULT(timer->persistent));
     grid.nextLine();
   }
 
   // Extended limits
   new StaticText(window, grid.getLabelSlot(), STR_ELIMITS);
-  new CheckBox(window, grid.getFieldSlot(), GET_SET_DEFAULT(g_model.extendedLimits));
+  new CheckBox(window, grid.getFieldSlot(),
+               GET_SET_DEFAULT(g_model.extendedLimits));
   grid.nextLine();
 
   // Extended trims
   new StaticText(window, grid.getLabelSlot(), STR_ETRIMS);
-  new CheckBox(window, grid.getFieldSlot(2, 0), GET_SET_DEFAULT(g_model.extendedTrims));
+  new CheckBox(window, grid.getFieldSlot(2, 0),
+               GET_SET_DEFAULT(g_model.extendedTrims));
   new TextButton(window, grid.getFieldSlot(2, 1), STR_RESET_BTN,
                  []() -> uint8_t {
                    START_NO_HIGHLIGHT();
@@ -597,12 +672,14 @@ void ModelSetupPage::build(Window * window)
 
   // Display trims
   new StaticText(window, grid.getLabelSlot(), STR_DISPLAY_TRIMS);
-  new Choice(window, grid.getFieldSlot(), "\006No\0   ChangeYes", 0, 2, GET_SET_DEFAULT(g_model.displayTrims));
+  new Choice(window, grid.getFieldSlot(), "\006No\0   ChangeYes", 0, 2,
+             GET_SET_DEFAULT(g_model.displayTrims));
   grid.nextLine();
 
   // Trim step
   new StaticText(window, grid.getLabelSlot(), STR_TRIMINC);
-  new Choice(window, grid.getFieldSlot(), STR_VTRIMINC, -2, 2, GET_SET_DEFAULT(g_model.trimInc));
+  new Choice(window, grid.getFieldSlot(), STR_VTRIMINC, -2, 2,
+             GET_SET_DEFAULT(g_model.trimInc));
   grid.nextLine();
 
   // Throttle parameters
@@ -612,12 +689,14 @@ void ModelSetupPage::build(Window * window)
 
     // Throttle reversed
     new StaticText(window, grid.getLabelSlot(true), STR_THROTTLEREVERSE);
-    new CheckBox(window, grid.getFieldSlot(), GET_SET_DEFAULT(g_model.throttleReversed));
+    new CheckBox(window, grid.getFieldSlot(),
+                 GET_SET_DEFAULT(g_model.throttleReversed));
     grid.nextLine();
 
     // Throttle source
     new StaticText(window, grid.getLabelSlot(true), STR_TTRACE);
-    new SourceChoice(window, grid.getFieldSlot(), 0, MIXSRC_LAST_CH, GET_SET_DEFAULT(g_model.thrTraceSrc));
+    new SourceChoice(window, grid.getFieldSlot(), 0, MIXSRC_LAST_CH,
+                     GET_SET_DEFAULT(g_model.thrTraceSrc));
     grid.nextLine();
 
     // Throttle trim
@@ -633,23 +712,27 @@ void ModelSetupPage::build(Window * window)
 
     // Display checklist
     new StaticText(window, grid.getLabelSlot(true), STR_CHECKLIST);
-    new CheckBox(window, grid.getFieldSlot(), GET_SET_DEFAULT(g_model.displayChecklist));
+    new CheckBox(window, grid.getFieldSlot(),
+                 GET_SET_DEFAULT(g_model.displayChecklist));
     grid.nextLine();
 
     // Throttle warning
     new StaticText(window, grid.getLabelSlot(true), STR_THROTTLEWARNING);
-    new CheckBox(window, grid.getFieldSlot(), GET_SET_INVERTED(g_model.disableThrottleWarning));
+    new CheckBox(window, grid.getFieldSlot(),
+                 GET_SET_INVERTED(g_model.disableThrottleWarning));
     grid.nextLine();
 
     // Switches warning
     new StaticText(window, grid.getLabelSlot(true), STR_SWITCHWARNING);
     for (int i = 0; i < NUM_SWITCHES; i++) {
       char s[3];
-      if (i > 0 && (i % 3) == 0)
-        grid.nextLine();
+      if (i > 0 && (i % 3) == 0) grid.nextLine();
 
-      auto button = new TextButton(window, grid.getFieldSlot(3, i % 3), getSwitchWarningString(s, i), nullptr,
-                                   (BF_GET(g_model.switchWarningState, 3 * i, 3) == 0 ? 0 : BUTTON_CHECKED));
+      auto button = new TextButton(
+          window, grid.getFieldSlot(3, i % 3), getSwitchWarningString(s, i),
+          nullptr,
+          (BF_GET(g_model.switchWarningState, 3 * i, 3) == 0 ? 0
+                                                             : BUTTON_CHECKED));
       button->setPressHandler([button, i] {
         uint8_t newstate = BF_GET(g_model.switchWarningState, 3 * i, 3);
         if (newstate == 1 && SWITCH_CONFIG(i) != SWITCH_3POS)
@@ -670,16 +753,17 @@ void ModelSetupPage::build(Window * window)
     new StaticText(window, grid.getLabelSlot(), STR_BEEPCTR);
     for (int i = 0; i < NUM_STICKS + NUM_POTS + NUM_SLIDERS; i++) {
       char s[2];
-      if (i > 0 && (i % 3) == 0)
-        grid.nextLine();
+      if (i > 0 && (i % 3) == 0) grid.nextLine();
 
-      new TextButton(window, grid.getFieldSlot(3, i % 3), getStringAtIndex(s, STR_RETA123, i),
-                     [=]() -> uint8_t {
-                       BF_BIT_FLIP(g_model.beepANACenter, BF_BIT(i));
-                       SET_DIRTY();
-                       return BF_SINGLE_BIT_GET(g_model.beepANACenter, i);
-                     },
-                     BF_SINGLE_BIT_GET(g_model.beepANACenter, i) ? BUTTON_CHECKED : 0);
+      new TextButton(
+          window, grid.getFieldSlot(3, i % 3),
+          getStringAtIndex(s, STR_RETA123, i),
+          [=]() -> uint8_t {
+            BF_BIT_FLIP(g_model.beepANACenter, BF_BIT(i));
+            SET_DIRTY();
+            return BF_SINGLE_BIT_GET(g_model.beepANACenter, i);
+          },
+          BF_SINGLE_BIT_GET(g_model.beepANACenter, i) ? BUTTON_CHECKED : 0);
     }
     grid.nextLine();
   }
@@ -687,7 +771,8 @@ void ModelSetupPage::build(Window * window)
   // Global functions
   {
     new StaticText(window, grid.getLabelSlot(), STR_USE_GLOBAL_FUNCS);
-    new CheckBox(window, grid.getFieldSlot(), GET_SET_INVERTED(g_model.noGlobalFunctions));
+    new CheckBox(window, grid.getFieldSlot(),
+                 GET_SET_INVERTED(g_model.noGlobalFunctions));
     grid.nextLine();
   }
 
@@ -695,15 +780,30 @@ void ModelSetupPage::build(Window * window)
   {
     new Subtitle(window, grid.getLineSlot(), STR_INTERNALRF);
     grid.nextLine();
-    grid.addWindow(new ModuleWindow(window, {0, grid.getWindowHeight(), LCD_W, 0}, INTERNAL_MODULE));
+    grid.addWindow(new ModuleWindow(
+        window, {0, grid.getWindowHeight(), LCD_W, 0}, INTERNAL_MODULE));
   }
 
   // External module
   {
     new Subtitle(window, grid.getLineSlot(), STR_EXTERNALRF);
     grid.nextLine();
-    grid.addWindow(new ModuleWindow(window, {0, grid.getWindowHeight(), LCD_W, 0}, EXTERNAL_MODULE));
+    grid.addWindow(new ModuleWindow(
+        window, {0, grid.getWindowHeight(), LCD_W, 0}, EXTERNAL_MODULE));
   }
+
+  // Trainer Mode
+#if defined(TRAINERMODULE)
+  {
+    grid.nextLine();
+    new StaticText(window, grid.getLabelSlot(), STR_TRAINER);
+    new Choice(window, grid.getFieldSlot(), STR_VTRAINERMODES, 0, 3, GET_DEFAULT(g_model.trainerMode),
+                                 [=](int32_t newValue) {
+        g_model.trainerMode = newValue;
+        SET_DIRTY();
+    });
+  }
+#endif
 
   grid.nextLine();
 
@@ -714,7 +814,8 @@ void ModelSetupPage::build(Window * window)
 //  bool newAntennaSel;
 //  if (warningResult) {
 //    warningResult = 0;
-//    g_model.moduleData[INTERNAL_MODULE].pxx.external_antenna = XJT_EXTERNAL_ANTENNA;
+//    g_model.moduleData[INTERNAL_MODULE].pxx.external_antenna =
+//    XJT_EXTERNAL_ANTENNA;
 //  }
 
 #if 0

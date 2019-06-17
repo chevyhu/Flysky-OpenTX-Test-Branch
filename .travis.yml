@@ -1,22 +1,16 @@
 sudo: required
 dist: trusty
-language: python
+language: cpp
 compiler: gcc
-
-virtualenv:
-  system_site_packages: true
-
-python:
-  - 3.4
 
 env:
   global:
-    - QT_BASE=53
+    # - QT_BASE=53
     # - QT_BASE=54
     # - QT_BASE=55
     # - QT_BASE=56
-    # - QT_BASE=57
-    #- GCC_ARM=/opt/gcc-arm-none-eabi/bin
+    - QT_BASE=57
+    # - GCC_ARM=/opt/gcc-arm-none-eabi/bin
     - AVR_FLAVORS="AVR9X 9X GRUVIN9X MEGA2560"
     - PYTHONPATH=${PYTHONPATH}:/usr/lib/python3/dist-packages
   matrix:
@@ -25,25 +19,26 @@ env:
     # DEFAULT is "make all" (including Companion & Simulator), with default settings
     #
     # - FLAVOR=ALL
-    - FLAVOR=DEFAULT
-    - FLAVOR=AVR9X
+    # - FLAVOR=DEFAULT
+    # - FLAVOR=AVR9X
     # - FLAVOR=9X
     # - FLAVOR=GRUVIN9X
     # - FLAVOR=MEGA2560
-    - FLAVOR=ARM9X
+    # - FLAVOR=ARM9X
     # - FLAVOR=AR9X
     # - FLAVOR=SKY9X
     # - FLAVOR=9XRPRO
-    - FLAVOR=X7
-    - FLAVOR=XLITE
-    - FLAVOR=X9
+    # - FLAVOR=X7
+    # - FLAVOR=XLITE
+    # - FLAVOR=X9
     # - FLAVOR=X9D
     # - FLAVOR=X9D+
     # - FLAVOR=X9E
-    - FLAVOR=HORUS
+    # - FLAVOR=HORUS
     # - FLAVOR=X10
     # - FLAVOR=X12Sr10
     # - FLAVOR=X12S
+    - FLAVOR=NV14
 
 before_install:
   - sudo add-apt-repository ppa:ubuntu-sdk-team/ppa --yes
@@ -55,9 +50,11 @@ before_install:
   - if [ "$QT_BASE" = "56" ]; then sudo add-apt-repository ppa:beineri/opt-qt562-trusty -y; fi
   - if [ "$QT_BASE" = "57" ]; then sudo add-apt-repository ppa:beineri/opt-qt571-trusty -y; fi
   - sudo apt-get update -qq
+  - pyenv uninstall -f 2.7.6 && pyenv install 3.5.4 && pyenv global 3.5.4
+  - pip install pillow
 
 install:
-  - sudo apt-get --yes --force-yes install python3-pyqt5 curl libmpfr4 libmpc3 libfox-1.6-dev libgtest-dev
+  - sudo apt-get --yes --force-yes install curl libmpfr4 libmpc3 libfox-1.6-dev libgtest-dev
   - |
     if [[ " ${AVR_FLAVORS} " =~ " ${FLAVOR} " || ${FLAVOR} == "ALL" ]]; then
       wget --quiet https://launchpad.net/ubuntu/+source/gcc-avr/1:4.9.2+Atmel3.5.0-1/+build/8403710/+files/gcc-avr_4.9.2+Atmel3.5.0-1_amd64.deb
@@ -67,7 +64,7 @@ install:
     fi
     if [[ ! " ${AVR_FLAVORS} " =~ " ${FLAVOR} " || ${FLAVOR} == "ALL" ]]; then
       sudo apt-get --yes --force-yes install gcc-arm-none-eabi
-      # Trying to build with gcc-arm 4.7 isn't working because it can't find the compiler, despite adding to PATH (in commit-tests.sh) by defining GCC_ARM above 
+      # Trying to build with gcc-arm 4.7 isn't working because it can't find the compiler, despite adding to PATH (in commit-tests.sh) by defining GCC_ARM above
       # - wget --quiet https://launchpad.net/gcc-arm-embedded/4.7/4.7-2013-q3-update/+download/gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2
       # - tar xjf gcc-arm-none-eabi-4_7-2013q3-20130916-linux.tar.bz2
       # - mv gcc-arm-none-eabi-4_7-2013q3 /opt/gcc-arm-none-eabi

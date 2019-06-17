@@ -18,8 +18,9 @@
  * GNU General Public License for more details.
  */
 
-enum BluetoothStates {
-#if defined(PCBX9E) && !defined(USEHORUSBT)
+enum BluetoothStates
+{
+#if defined(PCBX9E) && !defined(PCBNV14)
     BLUETOOTH_INIT,
     BLUETOOTH_WAIT_TTM,
     BLUETOOTH_WAIT_BAUDRATE_CHANGE,
@@ -42,20 +43,20 @@ enum BluetoothStates {
     BLUETOOTH_STATE_DISCONNECTED,
 };
 
-#define LEN_BLUETOOTH_ADDR              16
+#define LEN_BLUETOOTH_ADDR 16
 
 #if defined(PCBX7)
 extern uint8_t btChipPresent;
-#define IS_BLUETOOTH_CHIP_PRESENT()     (btChipPresent)
+#define IS_BLUETOOTH_CHIP_PRESENT() (btChipPresent)
 #else
-#define IS_BLUETOOTH_CHIP_PRESENT()     (true)
+#define IS_BLUETOOTH_CHIP_PRESENT() (true)
 #endif
 
 extern volatile uint8_t bluetoothState;
-extern char bluetoothLocalAddr[LEN_BLUETOOTH_ADDR+1];
-extern char bluetoothDistantAddr[LEN_BLUETOOTH_ADDR+1];
+extern char bluetoothLocalAddr[LEN_BLUETOOTH_ADDR + 1];
+extern char bluetoothDistantAddr[LEN_BLUETOOTH_ADDR + 1];
 
-char * bluetoothReadline(bool error_reset=true);
-void bluetoothWriteString(const char * command);
+char *bluetoothReadline(bool error_reset = true);
+void bluetoothWriteString(const char *command);
 void bluetoothForwardTelemetry(uint8_t data);
 void bluetoothWakeup();

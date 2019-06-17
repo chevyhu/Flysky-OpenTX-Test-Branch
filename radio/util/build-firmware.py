@@ -21,6 +21,7 @@ BOARD_GRUVIN9X = 1
 BOARD_SKY9X = 2
 BOARD_TARANIS = 3
 BOARD_HORUS = 4
+BOARD_NV14 = 5
 
 # Board families
 BOARD_FAMILY_AVR = 0
@@ -141,6 +142,12 @@ elif options[optcount] == "x12s":
     firmware_options = options_x12s
     maxsize = 2 * 1024 * 1024
     board = BOARD_HORUS
+    board_family = BOARD_FAMILY_ARM
+elif options[optcount] == "nv14":
+    command_options["PCB"] = "NV14"
+    firmware_options = options_nv14
+    maxsize = 2 * 1024 * 1024
+    board = BOARD_NV14
     board_family = BOARD_FAMILY_ARM
 else:
     exit(INVALID_BOARD)

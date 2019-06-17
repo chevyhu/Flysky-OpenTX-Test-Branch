@@ -28,4 +28,4 @@
 /lua_exports*
 /lua_fields*
 .directory
-
+*.pyc

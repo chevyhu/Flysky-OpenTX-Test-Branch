@@ -7,9 +7,9 @@ set -x
 # Allow variable core usage, default uses two cores, to set 8 cores for example : commit-tests.sh -j8
 : ${CORES:=2}
 # Default build treats warnings as errors, set -Wno-error to override, e.g.: commit-tests.sh -Wno-error
-: ${WERROR:=1}
+: ${WERROR:=0}
 # A board name to build for, or ALL
-: ${FLAVOR:=ALL}
+: ${FLAVOR:=NV14}
 
 for i in "$@"
 do
@@ -54,7 +54,7 @@ COMMON_OPTIONS+=${EXTRA_OPTIONS}
 
 : ${TEST_OPTIONS:="--gtest_shuffle --gtest_repeat=5 --gtest_break_on_failure"}
 
-: ${FIRMARE_TARGET:="firmware-size"}
+: ${FIRMARE_TARGET:="firmware"}
 
 mkdir build || true
 cd build
@@ -130,10 +130,10 @@ if [[ " 9XRPRO ARM9X ALL " =~ " ${FLAVOR} " ]] ; then
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
 fi
 
-if [[ " X7 ALL " =~ " ${FLAVOR} " ]] ; then
-  # OpenTX on X7
+if [[ " T12 ALL " =~ " ${FLAVOR} " ]] ; then
+  # JumperTX on T12
   rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=X7 -DHELI=YES -DGVARS=YES ${SRCDIR}
+  cmake ${COMMON_OPTIONS} -DPCB=T12 -DHELI=YES -DGVARS=YES ${SRCDIR}
   make -j${CORES} ${FIRMARE_TARGET}
   make -j${CORES} libsimulator
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
@@ -175,10 +175,28 @@ if [[ " X9E X9 ALL " =~ " ${FLAVOR} " ]] ; then
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
 fi
 
-if [[ " X10 HORUS ALL " =~ " ${FLAVOR} " ]] ; then
-  # OpenTX on X10 boards
+if [[ " T16 HORUS ALL " =~ " ${FLAVOR} " ]] ; then
+  # JumperTX on T16 boards
   rm -rf *
-  cmake ${COMMON_OPTIONS} -DPCB=X10 -DHELI=YES -DLUA=YES -DGVARS=YES ${SRCDIR}
+  cmake ${COMMON_OPTIONS} -DPCB=T16 -DHELI=YES -DLUA=YES -DGVARS=YES ${SRCDIR}
+  make -j${CORES} ${FIRMARE_TARGET}
+  make -j${CORES} libsimulator
+  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
+fi
+
+if [[ " NV14 ALL " =~ " ${FLAVOR} " ]] ; then
+  # Nirvana TX
+  rm -rf *
+  cmake ${COMMON_OPTIONS} -DPCB=NV14 -DHELI=NO -DLUA=ON -DGVARS=OFF ${SRCDIR}
+  make -j${CORES} ${FIRMARE_TARGET}
+  make -j${CORES} libsimulator
+  make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}
+fi
+
+if [[ " T16HD HORUS ALL " =~ " ${FLAVOR} " ]] ; then
+  # JumperTX on T16HD boards
+  rm -rf *
+  cmake ${COMMON_OPTIONS} -DPCB=T16HD -DHELI=YES -DLUA=YES -DGVARS=YES ${SRCDIR}
   make -j${CORES} ${FIRMARE_TARGET}
   make -j${CORES} libsimulator
   make -j${CORES} gtests ; ./gtests ${TEST_OPTIONS}

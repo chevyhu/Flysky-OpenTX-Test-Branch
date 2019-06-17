@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  */
 
-#include "opentx.h"
 #include "mainwindow.h"
+#include "opentx.h"
 #include <queue>
 
 uint8_t currentSpeakerVolume = 255;
