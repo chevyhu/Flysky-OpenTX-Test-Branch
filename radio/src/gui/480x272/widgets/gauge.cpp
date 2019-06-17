@@ -20,7 +20,6 @@
 
 #include "opentx.h"
 
-#define GAUGE_H	16
 class GaugeWidget: public Widget
 {
   public:
@@ -39,7 +38,6 @@ const ZoneOption GaugeWidget::options[] = {
   { "Min", ZoneOption::Integer, OPTION_VALUE_SIGNED(-RESX), OPTION_VALUE_SIGNED(-RESX), OPTION_VALUE_SIGNED(RESX) },
   { "Max", ZoneOption::Integer, OPTION_VALUE_SIGNED(RESX), OPTION_VALUE_SIGNED(-RESX), OPTION_VALUE_SIGNED(RESX) },
   { "Color", ZoneOption::Color, OPTION_VALUE_UNSIGNED(RED) },
-  { "Text color", ZoneOption::Color, OPTION_VALUE_UNSIGNED(TEXT_COLOR) },
   { NULL, ZoneOption::Bool }
 };
 
@@ -49,7 +47,6 @@ void GaugeWidget::refresh()
   int32_t min = persistentData->options[1].signedValue;
   int32_t max = persistentData->options[2].signedValue;
   uint16_t color = persistentData->options[3].unsignedValue;
-  uint16_t textColor = persistentData->options[4].unsignedValue;
 
   int32_t value = getValue(index);
   int32_t value_in_range = value;
@@ -62,22 +59,13 @@ void GaugeWidget::refresh()
   int percent = divRoundClosest(100 * (value_in_range - min), (max - min));
 
   // Gauge label
-  lcdSetColor(textColor);
-  drawSource(zone.x, zone.y, index, SMLSIZE | CUSTOM_COLOR);
+  drawSource(zone.x, zone.y, index, SMLSIZE | TEXT_INVERTED_COLOR);
 
   // Gauge
   lcdSetColor(color);
-  uint16_t y = zone.y + 17;
-
-  lcdDrawSolidFilledRect(zone.x, y, zone.w, GAUGE_H, TEXT_INVERTED_COLOR);
-  lcdDrawNumber(zone.x+zone.w/2, y - 2, percent, SMLSIZE | CUSTOM_COLOR | CENTERED, 0, NULL, "%");
-  lcd->invertRect(zone.x + w, y, zone.w - w, GAUGE_H, CUSTOM_COLOR);
-  lcdDrawSolidHorizontalLine(zone.x, y-1, zone.w, LINE_COLOR);
-  lcdDrawSolidHorizontalLine(zone.x, y+(GAUGE_H-1), zone.w, LINE_COLOR);
-
-  lcdDrawSolidVerticalLine(zone.x, y-1, GAUGE_H, LINE_COLOR);
-  lcdDrawSolidVerticalLine(zone.x + zone.w, y-1, GAUGE_H + 1, LINE_COLOR);
-
+  lcdDrawSolidFilledRect(zone.x, zone.y + 16, zone.w, 16, TEXT_INVERTED_COLOR);
+  lcdDrawNumber(zone.x+zone.w/2, zone.y + 17, percent, SMLSIZE | CUSTOM_COLOR | CENTERED, 0, NULL, "%");
+  lcd->invertRect(zone.x + w, zone.y + 16, zone.w - w, 16, CUSTOM_COLOR);
 }
 
 BaseWidgetFactory<GaugeWidget> gaugeWidget("Gauge", GaugeWidget::options);

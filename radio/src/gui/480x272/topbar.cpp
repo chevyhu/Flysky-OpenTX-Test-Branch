@@ -22,15 +22,14 @@
 
 unsigned int Topbar::getZonesCount() const
 {
-  int width = LCD_W - (TOPBAR_BUTTON_WIDTH + TOPBAR_ITEMS_RIGHT);
-  int items = width / (TOPBAR_ZONE_WIDTH + 2*TOPBAR_ZONE_MARGIN);
+  int items = (LCD_W - TOPBAR_MENU_LEFT) / (TOPBAR_ZONE_WIDTH + 2*TOPBAR_ZONE_MARGIN);
   return std::min(items, MAX_TOPBAR_ZONES);
 }
 
 Zone Topbar::getZone(unsigned int index) const
 {
   Zone zone;
-  zone.x = TOPBAR_BUTTON_WIDTH + (TOPBAR_ZONE_WIDTH + 2*TOPBAR_ZONE_MARGIN) * index;
+  zone.x = TOPBAR_MENU_LEFT + (TOPBAR_ZONE_WIDTH + 2*TOPBAR_ZONE_MARGIN) * index;
   zone.y = TOPBAR_ZONE_MARGIN;
   zone.w = TOPBAR_ZONE_WIDTH;
   zone.h = MENU_HEADER_HEIGHT - 2*TOPBAR_ZONE_MARGIN;
@@ -79,28 +78,28 @@ void drawTopBar()
                              LBM_TOPMENU_VOLUME_4
                             };
   /* Audio volume */
-  lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, LBM_TOPMENU_VOLUME_SCALE, MENU_TITLE_DISABLE_COLOR);
+  lcdDrawBitmapPattern(LCD_W-130, 4, LBM_TOPMENU_VOLUME_SCALE, MENU_TITLE_DISABLE_COLOR);
 #if 1
   if( e_mode_quiet == g_eeGeneral.beepMode )
   {
-      lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, VolumeTable[0], MENU_TITLE_COLOR);
+      lcdDrawBitmapPattern(LCD_W-130, 4, VolumeTable[0], MENU_TITLE_COLOR);
   }
   else
   {
-      lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, VolumeTable[min((requiredSpeakerVolume+5)/6,4)], MENU_TITLE_COLOR);
+      lcdDrawBitmapPattern(LCD_W-130, 4, VolumeTable[min((requiredSpeakerVolume+5)/6,4)], MENU_TITLE_COLOR);
   }
 
 #else
   if (requiredSpeakerVolume == 0 || g_eeGeneral.beepMode == e_mode_quiet)
-    lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, LBM_TOPMENU_VOLUME_0, MENU_TITLE_COLOR);
+    lcdDrawBitmapPattern(LCD_W-130, 4, LBM_TOPMENU_VOLUME_0, MENU_TITLE_COLOR);
   else if (requiredSpeakerVolume < 7)
-    lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, LBM_TOPMENU_VOLUME_1, MENU_TITLE_COLOR);
+    lcdDrawBitmapPattern(LCD_W-130, 4, LBM_TOPMENU_VOLUME_1, MENU_TITLE_COLOR);
   else if (requiredSpeakerVolume < 13)
-    lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, LBM_TOPMENU_VOLUME_2, MENU_TITLE_COLOR);
+    lcdDrawBitmapPattern(LCD_W-130, 4, LBM_TOPMENU_VOLUME_2, MENU_TITLE_COLOR);
   else if (requiredSpeakerVolume < 19)
-    lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, LBM_TOPMENU_VOLUME_3, MENU_TITLE_COLOR);
+    lcdDrawBitmapPattern(LCD_W-130, 4, LBM_TOPMENU_VOLUME_3, MENU_TITLE_COLOR);
   else
-    lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 4, LBM_TOPMENU_VOLUME_4, MENU_TITLE_COLOR);
+    lcdDrawBitmapPattern(LCD_W-130, 4, LBM_TOPMENU_VOLUME_4, MENU_TITLE_COLOR);
 #endif
   /* Tx battery */
 #if defined (PCBNV14)
@@ -111,7 +110,7 @@ void drawTopBar()
 
   if (charge_state == CHARGE_STARTED || charge_state == CHARGE_FINISHED)
   {
-    lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 24, LBM_TOPMENU_TXBATT_CHARGE, MENU_TITLE_COLOR);
+    lcdDrawBitmapPattern(LCD_W-130, 24, LBM_TOPMENU_TXBATT_CHARGE, MENU_TITLE_COLOR);
 
     if (charge_state == CHARGE_FINISHED)
     {
@@ -120,14 +119,14 @@ void drawTopBar()
   }
   else
   {
-    lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 24, LBM_TOPMENU_TXBATT, MENU_TITLE_COLOR);
+    lcdDrawBitmapPattern(LCD_W-130, 24, LBM_TOPMENU_TXBATT, MENU_TITLE_COLOR);
   }
 
 
 #else
   uint8_t bars = limit<int8_t>(0, 6 * (g_vbat100mV - g_eeGeneral.vBatMin - 90) / (30 + g_eeGeneral.vBatMax - g_eeGeneral.vBatMin), 5);
 
-  lcdDrawBitmapPattern(LCD_W-TOPBAR_ITEMS_RIGHT, 24, LBM_TOPMENU_TXBATT, MENU_TITLE_COLOR);
+  lcdDrawBitmapPattern(LCD_W-130, 24, LBM_TOPMENU_TXBATT, MENU_TITLE_COLOR);
 
   for (unsigned int i = 0; i < 5; i++) {
     lcdDrawSolidFilledRect(LCD_W-122+4*i, 30, 2, 8, i >= bars ? MENU_TITLE_DISABLE_COLOR : MENU_TITLE_COLOR);

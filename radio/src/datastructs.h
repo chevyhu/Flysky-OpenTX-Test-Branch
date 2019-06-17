@@ -451,7 +451,6 @@ PACK(struct ScriptData {
  * Frsky Telemetry structure
  */
 #if defined(CPUARM)
-#if 0
 PACK(struct RssiAlarmData {
   int8_t disabled:1;
   int8_t spare:1;
@@ -461,17 +460,6 @@ PACK(struct RssiAlarmData {
   inline int8_t getWarningRssi() {return 45 + warning;}
   inline int8_t getCriticalRssi() {return 42 + critical;}
  });
-#else
-PACK(struct RssiAlarmData {
-  int8_t disabled:1;
-  int8_t spare:7;
-  int8_t warning;
-  //int8_t spare2:2;
-  int8_t critical;
-  inline int8_t getWarningRssi() {return 45 + warning;}
-  inline int8_t getCriticalRssi() {return 42 + critical;}
- });
-#endif
 #else
 PACK(struct FrSkyRSSIAlarm {
   int8_t level:2;

@@ -97,7 +97,7 @@ void OutputsWidget::refresh()
 {
   if (zone.w > 300 && zone.h > 20)
     twoColumns();
-  else if (zone.w > 100 && zone.h > 20)
+  else if (zone.w > 150 && zone.h > 20)
     oneColumn();
 };
 

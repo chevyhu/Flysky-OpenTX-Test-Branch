@@ -29,9 +29,9 @@ MenuWindow::MenuWindow(Menu * parent):
 void MenuWindow::select(int index)
 {
   selectedIndex = index;
-  //if (innerHeight > height()) {
-  setScrollPositionY(lineHeight * index - 3 * lineHeight);
-  //}
+  if (innerHeight > height()) {
+    setScrollPositionY(lineHeight * index - 3 * lineHeight);
+  }
 }
 
 bool MenuWindow::onTouchEnd(coord_t x, coord_t y)
@@ -70,17 +70,6 @@ void Menu::addLine(const std::string & text, std::function<void()> onPress)
 {
   menuWindow.addLine(text, std::move(onPress));
   updatePosition();
-}
-
-void Menu::checkEvents() {
-  Window::checkEvents();
-  if(indexToSelect != -1) {
-    menuWindow.select(indexToSelect);
-    invalidate();
-    indexToSelect = -1;
-    return;
-  }
-
 }
 
 void Menu::removeLines()

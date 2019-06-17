@@ -528,8 +528,16 @@ void RadioSetupPage::build(Window *window) {
              std::string(
                  &getSourceString(MIXSRC_Rud + modn12x3[4 * value + 1])[0]);
     });
+<<<<<<< HEAD
     grid.nextLine();
     grid.nextLine();
+=======
+  choice->setTextHandler([](uint8_t value) {
+    return std::to_string(1 + value) + ": left=" + std::string(&getSourceString(MIXSRC_Rud + modn12x3[4 * value])[1]) + "+" + std::string(&getSourceString(MIXSRC_Rud + modn12x3[4 * value + 1])[1]);
+  });
+  grid.nextLine();
+  grid.nextLine();
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
 
     window->setInnerHeight(grid.getWindowHeight());
 }

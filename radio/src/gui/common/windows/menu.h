@@ -115,16 +115,13 @@ class Menu : public Window {
       menuWindow.setHeight(window->height());
     }
 
-    void checkEvents() override;
-
     void addLine(const std::string & text, std::function<void()> onPress);
 
     void removeLines();
 
     void select(int index)
     {
-      indexToSelect = index;
-      invalidate();
+      menuWindow.select(index);
     }
 
     bool onTouchStart(coord_t x, coord_t y) override
@@ -140,7 +137,6 @@ class Menu : public Window {
     MenuWindow menuWindow;
     Window * toolbar = nullptr;
     void updatePosition();
-    int indexToSelect = -1;
 };
 
 #endif

@@ -358,11 +358,6 @@ class BitmapBuffer: public BitmapBufferBase<uint16_t>
         srcy -= y-ymin;
         y = ymin;
       }
-      if(scale != 0) {
-        w = (int)((float)w * scale);
-        h = (int)((float)h * scale);
-      }
-
 
       if (x + w > xmax) {
         w = xmax - x;
@@ -392,14 +387,18 @@ class BitmapBuffer: public BitmapBufferBase<uint16_t>
         }
       }
       else {
-        if (x + w > width)
-          w = width - x;
-        if (y + h > height)
-          h = height - y;
-        for (int i = 0; i < h; i++) {
+        int scaledw = w * scale;
+        int scaledh = h * scale;
+
+        if (x + scaledw > width)
+          scaledw = width - x;
+        if (y + scaledh > height)
+          scaledh = height - y;
+
+        for (int i = 0; i < scaledh; i++) {
           display_t * p = getPixelPtr(x, y + i);
           const display_t * qstart = bmp->getPixelPtr(srcx, srcy + int(i / scale));
-          for (int j = 0; j < w; j++) {
+          for (int j = 0; j < scaledw; j++) {
             const display_t * q = qstart;
             MOVE_PIXEL_RIGHT(q, int(j / scale));
             if (bmp->getFormat() == BMP_ARGB4444) {
@@ -418,18 +417,12 @@ class BitmapBuffer: public BitmapBufferBase<uint16_t>
     template<class T>
     void drawScaledBitmap(const T * bitmap, coord_t x, coord_t y, coord_t w, coord_t h)
     {
-      int imgW = bitmap->getWidth();
-      int imgH = bitmap->getHeight();
+      float vscale = float(h) / bitmap->getHeight();
+      float hscale = float(w) / bitmap->getWidth();
+      float scale = vscale < hscale ? vscale : hscale;
 
-      int vscale = h *100 / imgH;
-      int hscale = w *100 / imgW;
-      float scale = (float)(hscale < vscale ? hscale : vscale)/(float)100;
-
-      int targetW = (int)(imgW * scale);
-      int targetH = (int)(imgH * scale);
-
-      int xshift = (w - targetW) / 2;
-      int yshift = (h - targetH) / 2;
+      int xshift = (w - (bitmap->getWidth() * scale)) / 2;
+      int yshift = (h - (bitmap->getHeight() * scale)) / 2;
       drawBitmap(x + xshift, y + yshift, bitmap, 0, 0, 0, 0, scale);
     }
 

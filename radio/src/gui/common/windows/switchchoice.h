@@ -22,7 +22,6 @@
 #define _SWITCHCHOICE_H_
 
 #include "window.h"
-#include <map>
 
 class Menu;
 bool isSwitchAvailableInMixes(int swtch);
@@ -38,7 +37,6 @@ class SwitchChoice : public Window {
       getValue(std::move(getValue)),
       setValue(std::move(setValue))
     {
-      menu = nullptr;
     }
 
 #if defined(DEBUG_WINDOWS)
@@ -47,7 +45,6 @@ class SwitchChoice : public Window {
       return "SwitchChoice";
     }
 #endif
-    void checkEvents() override;
 
     void paint(BitmapBuffer * dc) override;
 
@@ -64,13 +61,7 @@ class SwitchChoice : public Window {
     std::function<int16_t()> getValue;
     std::function<void(int16_t)> setValue;
     std::function<bool(int)> isValueAvailable = isSwitchAvailableInMixes;
-    std::map<int, int> valueIndexMap;
-    Menu * menu;
     void fillMenu(Menu * menu, std::function<bool(int16_t)> condition=nullptr);
-    //used to set pointer to null after menu is closed
-    void deleteMenu() {
-      menu = nullptr;
-    }
 };
 
 #endif // _SWITCHCHOICE_H_

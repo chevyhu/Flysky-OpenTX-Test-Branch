@@ -113,16 +113,24 @@ void RadioVersionPage::build(Window *window) {
 
   new StaticText(window, grid.getLabelSlot(), "CPU UID :");
   grid.nextLine(12);
+<<<<<<< HEAD
   new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26},
                  reusableBuffer.version.id);
   grid.nextLine();
 
 /*
+=======
+  new StaticText(window, {6, grid.getWindowHeight(), LCD_W - 6, 26}, reusableBuffer.version.id);
+  grid.nextLine();
+
+
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
   new TextButton(window, {LCD_W/2-125, window->height() - 150, 250, 30}, STR_QUICK_START_GUIDE, [=]() -> int8_t {
       new QR_CodeMenu(QR_CODE_QUICK_START);
       return 1;
   });
 
+<<<<<<< HEAD
   new TextButton(window, {LCD_W/2-125, window->height() - 150, 250, 30},
   STR_USER_MANUAL, [=]() -> int8_t { new QR_CodeMenu(QR_CODE_USER_MANUAL);
       return 1;
@@ -146,6 +154,19 @@ void RadioVersionPage::build(Window *window) {
 		  return 0;
 	  });
 	  dialog->runForever();
+=======
+  new TextButton(window, {LCD_W/2-125, window->height() - 100, 250, 30}, STR_USER_MANUAL, [=]() -> int8_t {
+      new QR_CodeMenu(QR_CODE_USER_MANUAL);
+      return 1;
+  });
+  new TextButton(window, {LCD_W/2-125, window->height() - 100, 250, 30}, STR_FACTORYRESET, [=]() -> int8_t {
+    auto dialog = new Dialog(WARNING_TYPE_INPUT, STR_CONFIRMRESET, STR_STORAGE_FORMAT, [=]() {
+      storageEraseAll(false);
+      NVIC_SystemReset();
+      return 0;
+    });
+	dialog->runForever();
+>>>>>>> parent of 954e16b03... Merge pull request #1 from open-flysky/chevy/NV14-flysky
     return 0;
   });
 #endif
