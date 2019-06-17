@@ -20,20 +20,7 @@
 
 #pragma once
 
-#include <sstream>
-#include <string>
 #include "tabsgroup.h"
-
-using namespace std;
-
-namespace std {
-template <typename T>
-std::string to_string(const T& n) {
-  std::ostringstream stm;
-  stm << n;
-  return stm.str();
-}
-}  // namespace std
 
 class ModelTelemetryPage : public PageTab {
  public:

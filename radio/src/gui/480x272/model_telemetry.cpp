@@ -19,6 +19,8 @@
  */
 
 #include "model_telemetry.h"
+#include <iostream>
+#include <string>
 #include "libwindows.h"
 #include "opentx.h"
 
@@ -141,7 +143,7 @@ class SensorEditWindow : public Page {
   Window *sensorOneWindow = nullptr;
 
   void buildHeader(Window *window) {
-    new StaticText(window, {70, 4, 200, 20}, STR_SENSOR + std::to_string(index + 1),
+    new StaticText(window, {70, 4, 200, 20}, STR_SENSOR + to_string(index + 1),
                    MENU_TITLE_COLOR);
     TelemetrySensor &telemetrySensor = g_model.telemetrySensors[index];
     uint8_t unit =
@@ -152,11 +154,11 @@ class SensorEditWindow : public Page {
                 STR_VTELEMUNIT[0]);
       new StaticText(
           window, {185, 4, 200, 20},
-          std::to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)) + unitStr,
+          to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)) + unitStr,
           MENU_TITLE_COLOR);
     } else {
       new StaticText(window, {185, 4, 200, 20},
-                     std::to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)),
+                     to_string(getValue(MIXSRC_FIRST_TELEM + 3 * index)),
                      MENU_TITLE_COLOR);
     }
   }
@@ -294,7 +296,7 @@ class SensorEditWindow : public Page {
                                  &sensor->dist.alt, isAltSensor);
         } else {
           new StaticText(sensorOneWindow, grid.getLabelSlot(),
-                         STR_SOURCE + std::to_string(2));
+                         STR_SOURCE + to_string(2));
           new SensorSourceChoice(sensorOneWindow, grid.getFieldSlot(),
                                  (uint8_t *)&sensor->calc.sources[1],
                                  isSensorAvailable);
@@ -316,14 +318,14 @@ class SensorEditWindow : public Page {
     if ((sensor->type == TELEM_TYPE_CALCULATED &&
          sensor->formula < TELEM_FORMULA_MULTIPLY)) {
       new StaticText(sensorOneWindow, grid.getLabelSlot(),
-                     STR_SOURCE + std::to_string(3));
+                     STR_SOURCE + to_string(3));
       new SensorSourceChoice(sensorOneWindow, grid.getFieldSlot(),
                              (uint8_t *)&sensor->calc.sources[2],
                              isSensorAvailable);
       grid.nextLine();
 
       new StaticText(sensorOneWindow, grid.getLabelSlot(),
-                     STR_SOURCE + std::to_string(4));
+                     STR_SOURCE + to_string(4));
       new SensorSourceChoice(sensorOneWindow, grid.getFieldSlot(),
                              (uint8_t *)&sensor->calc.sources[3],
                              isSensorAvailable);
